@@ -1,0 +1,30 @@
+// Rutas de la app. Ya están todas registradas: NO hace falta tocar este archivo
+// para hacer tu pantalla. Si necesitas una ruta nueva, avisa en el grupo antes.
+import { Routes, Route } from 'react-router-dom';
+import LayoutCliente from './componentes/LayoutCliente.jsx';
+import LayoutAdmin from './componentes/LayoutAdmin.jsx';
+
+import Catalogo from './paginas/cliente/Catalogo.jsx';
+import DetalleEquipo from './paginas/cliente/DetalleEquipo.jsx';
+import SolicitarCotizacion from './paginas/cliente/SolicitarCotizacion.jsx';
+
+import Cotizaciones from './paginas/admin/Cotizaciones.jsx';
+import CrearCotizacion from './paginas/admin/CrearCotizacion.jsx';
+import EditarCotizacion from './paginas/admin/EditarCotizacion.jsx';
+
+export default function App() {
+  return (
+    <Routes>
+      <Route element={<LayoutCliente />}>
+        <Route path="/" element={<Catalogo />} />
+        <Route path="/equipos/:id" element={<DetalleEquipo />} />
+        <Route path="/cotizar" element={<SolicitarCotizacion />} />
+      </Route>
+      <Route path="/admin" element={<LayoutAdmin />}>
+        <Route path="cotizaciones" element={<Cotizaciones />} />
+        <Route path="cotizaciones/nueva" element={<CrearCotizacion />} />
+        <Route path="cotizaciones/:id/editar" element={<EditarCotizacion />} />
+      </Route>
+    </Routes>
+  );
+}
