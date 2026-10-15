@@ -1,0 +1,116 @@
+.catalogo,
+.detalle-equipo {
+  --naranja: #f5630b;
+  --naranja-suave: #fff1e7;
+  --borde: #e5eaf1;
+  --gris: #748298;
+  --radio: 12px;
+}
+.catalogo .tarjeta,
+.detalle-equipo .tarjeta { border-color: var(--borde); box-shadow: 0 1px 3px #1b233008; }
+.catalogo-ruta { margin: 0 0 6px; color: var(--naranja); font-size: 11px; font-weight: 700; letter-spacing: .06em; }
+.catalogo-encabezado,
+.detalle-encabezado { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 18px; }
+.catalogo-encabezado h1,
+.detalle-encabezado h1 { margin: 0 0 4px; font-size: 24px; }
+.catalogo-encabezado .sutil,
+.detalle-encabezado .sutil { font-size: 13px; }
+.catalogo-contador { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; color: var(--gris); font-size: 11px; white-space: nowrap; }
+.catalogo-contador strong { color: var(--tinta); font-size: 20px; }
+.equipos-icono { display: inline-flex; align-items: center; justify-content: center; flex: 0 0 30px; height: 30px; border: 1px solid #ffd9bd; border-radius: 8px; background: #fff7f0; color: var(--naranja); }
+.equipos-icono svg { width: 17px; height: 17px; }
+
+.catalogo-filtros { margin-bottom: 22px; }
+.catalogo-panel-titulo,
+.detalle-panel-encabezado { display: flex; align-items: center; gap: 10px; }
+.catalogo-panel-titulo { padding-bottom: 16px; margin-bottom: 18px; border-bottom: 1px solid var(--borde); }
+.catalogo-panel-titulo h2,
+.detalle-panel-encabezado h2 { margin: 0; font-size: 14px; }
+.catalogo-panel-titulo .sutil { margin-top: 3px; font-size: 12px; }
+.catalogo-filtros-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 180px), 1fr)); align-items: end; gap: 14px; }
+.catalogo-filtros-grid label,
+.detalle-campos label { color: #526178; font-size: 12px; }
+.catalogo-filtros-grid input,
+.catalogo-filtros-grid select,
+.detalle-campos input { width: 100%; min-width: 0; border-color: var(--borde); font-size: 13px; }
+.catalogo-filtros-grid input:focus,
+.catalogo-filtros-grid select:focus,
+.detalle-campos input:focus { outline: 2px solid var(--naranja-suave); border-color: var(--naranja); }
+.catalogo-casilla { flex-direction: row; align-items: center; min-height: 40px; }
+.catalogo-filtros-grid .catalogo-casilla input { width: auto; margin: 0; accent-color: var(--naranja); }
+.catalogo-filtros .msg-error { margin: 14px 0 0; }
+.catalogo-lista-encabezado { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
+.catalogo-lista-encabezado h2 { margin: 0; font-size: 17px; }
+.catalogo-lista-encabezado .sutil { font-size: 12px; }
+
+.catalogo-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr)); gap: 16px; }
+.catalogo-tarjeta { display: flex; flex-direction: column; overflow: hidden; padding: 0; color: var(--tinta); text-decoration: none; }
+.catalogo-tarjeta:hover { border-color: var(--naranja); box-shadow: 0 4px 14px #1b233015; }
+.catalogo-tarjeta:focus-visible { outline: 2px solid var(--naranja); outline-offset: 3px; }
+.equipo-foto { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; }
+.equipo-foto-vacia { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 9px; background: #f5f7fa; border-bottom: 1px solid var(--borde); color: var(--gris); font-size: 13px; font-weight: 600; }
+.equipo-foto-icono { display: inline-flex; align-items: center; justify-content: center; width: 38px; height: 38px; border: 1px solid #ffd9bd; border-radius: 9px; background: var(--blanco); color: var(--naranja); }
+.equipo-foto-icono svg { width: 22px; height: 22px; }
+.catalogo-tarjeta-info { display: flex; flex: 1; flex-direction: column; padding: 16px; }
+.catalogo-tarjeta-meta { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 12px; }
+.catalogo-codigo { padding: 4px 8px; border: 1px solid var(--borde); border-radius: 6px; background: #f7f9fb; color: #607087; font-size: 11px; font-weight: 600; }
+.catalogo-tarjeta-info h2 { margin: 0 0 4px; font-size: 16px; line-height: 1.3; }
+.catalogo-tarjeta-info .sutil { font-size: 12px; }
+.catalogo-tarjeta-pie { display: flex; align-items: end; justify-content: space-between; flex-wrap: wrap; gap: 10px; padding-top: 14px; margin-top: auto; border-top: 1px solid var(--borde); }
+.catalogo-precio { display: flex; flex-direction: column; gap: 4px; }
+.catalogo-precio small { color: var(--gris); font-size: 10px; font-weight: 700; letter-spacing: .04em; }
+.catalogo-precio strong { font-size: 17px; }
+.catalogo-tarjeta-ver { color: var(--naranja); font-size: 12px; font-weight: 600; }
+.catalogo-estado { display: inline-block; margin: 0; padding: 4px 9px; border-radius: 999px; font-size: 11px; font-weight: 600; white-space: nowrap; }
+.catalogo-estado-disponible { background: var(--verde-suave); color: var(--verde); }
+.catalogo-estado-no-disponible { background: var(--rojo-suave); color: var(--rojo); }
+.catalogo-vacio { padding: 32px; text-align: center; }
+
+.detalle-regresar { color: var(--naranja); font-size: 12px; font-weight: 600; text-decoration: none; white-space: nowrap; }
+.detalle-regresar:hover { text-decoration: underline; }
+.detalle-resumen { display: flex; align-items: center; justify-content: space-between; gap: 18px; padding: 16px 20px; margin-bottom: 14px; }
+.detalle-resumen-nombre { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 4px; }
+.detalle-resumen-nombre h2 { margin: 0; font-size: 19px; }
+.detalle-resumen .sutil { font-size: 12px; }
+.detalle-resumen-precio { display: flex; flex-direction: column; gap: 4px; min-width: 130px; text-align: right; white-space: nowrap; }
+.detalle-resumen-precio small { color: var(--gris); font-size: 10px; font-weight: 700; letter-spacing: .04em; }
+.detalle-resumen-precio strong { color: var(--naranja); font-size: 19px; }
+.detalle-grid { display: grid; grid-template-columns: minmax(0, 1.85fr) minmax(300px, 1fr); align-items: start; gap: 14px; }
+.detalle-grid > .tarjeta { min-width: 0; padding: 18px; }
+.detalle-panel-encabezado { margin-bottom: 16px; }
+.detalle-info-cuerpo { display: grid; grid-template-columns: minmax(170px, 220px) minmax(0, 1fr); align-items: start; gap: 18px; }
+.detalle-foto { aspect-ratio: 4 / 3; border: 1px solid var(--borde); border-radius: 9px; }
+.detalle-caracteristicas { min-width: 0; margin: 0; }
+.detalle-caracteristicas > div { display: grid; grid-template-columns: minmax(100px, .9fr) minmax(0, 1.1fr); gap: 12px; padding: 9px 0; border-bottom: 1px solid var(--borde); font-size: 12px; }
+.detalle-caracteristicas > div:last-child { border-bottom: 0; }
+.detalle-caracteristicas dt { color: var(--gris); font-weight: 400; }
+.detalle-caracteristicas dd { margin: 0; font-weight: 600; overflow-wrap: anywhere; }
+.detalle-renta-ayuda { margin: 0 0 16px; font-size: 12px; }
+.detalle-campos { display: grid; gap: 12px; }
+.detalle-subtotal { min-height: 58px; padding: 14px; margin: 18px 0 8px; border: 1px solid #ffe3cf; border-radius: 9px; background: #fff7f0; }
+.detalle-subtotal p { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; margin: 0; font-size: 12px; }
+.detalle-subtotal strong { color: var(--naranja); font-size: 18px; }
+.detalle-renta-nota { margin: 0 0 14px; font-size: 11px; }
+.detalle-renta > .boton { width: 100%; text-align: center; }
+.detalle-confirmacion { padding: 16px; margin-top: 18px; border: 1px solid #bcecd1; border-radius: var(--radio); background: #ebfbf2; }
+.detalle-confirmacion p { margin: 0 0 12px; color: var(--verde); font-weight: 600; }
+.detalle-acciones { display: flex; flex-wrap: wrap; gap: 8px; }
+.detalle-no-encontrado { max-width: 640px; }
+.detalle-no-encontrado .boton { margin-top: 20px; }
+
+@media (max-width: 900px) {
+  .detalle-grid { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 600px) {
+  .cliente-header { flex-wrap: wrap; gap: 12px; padding: 16px; }
+  .cliente-header > div { flex-wrap: wrap; }
+  .cliente-main { padding: 16px; }
+  .catalogo-encabezado,
+  .detalle-encabezado { align-items: flex-start; flex-direction: column; }
+  .catalogo-contador { align-items: center; flex-direction: row; }
+  .detalle-resumen { align-items: flex-start; flex-direction: column; }
+  .detalle-resumen-precio { text-align: left; }
+  .detalle-info-cuerpo { grid-template-columns: 1fr; }
+  .detalle-foto { max-height: 200px; aspect-ratio: 16 / 9; }
+}
