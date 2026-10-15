@@ -77,3 +77,52 @@ export function modificarCotizacion(id, cambios) {
 export function reiniciarDatos() {
   escribir(COTIZACIONES_SEMILLA);
 }
+
+// ---------- Mi cotización (carrito del cliente web) ----------
+// El cliente junta varios equipos antes de pedir la cotización.
+// Forma: { lineas: [{ equipoId, cantidad }], fechaInicio: 'AAAA-MM-DD' | '', fechaFin: 'AAAA-MM-DD' | '' }
+// Las fechas son UNA sola para toda la cotización.
+// Cada cambio avisa con el evento 'carrito' en window (lo usa el encabezado para el contador).
+const CLAVE_CARRITO = 'cotizador:carrito';
+const CARRITO_VACIO = { lineas: [], fechaInicio: '', fechaFin: '' };
+
+export function obtenerCarrito() {
+  try {
+    const guardado = localStorage.getItem(CLAVE_CARRITO);
+    if (guardado) return { ...CARRITO_VACIO, ...JSON.parse(guardado) };
+  } catch (e) { /* si está dañado, se regresa vacío */ }
+  return structuredClone(CARRITO_VACIO);
+}
+function guardarCarrito(carrito) {
+  localStorage.setItem(CLAVE_CARRITO, JSON.stringify(carrito));
+  window.dispatchEvent(new Event('carrito'));
+  return carrito;
+}
+
+// Si el equipo ya está, suma la cantidad. Si vienen fechas, se vuelven las fechas de la cotización.
+export function agregarAlCarrito({ equipoId, cantidad = 1, fechaInicio, fechaFin }) {
+  if (!obtenerEquipo(equipoId)) throw new Error(`No existe el equipo ${equipoId}`);
+  const carrito = obtenerCarrito();
+  const existente = carrito.lineas.find((l) => l.equipoId === equipoId);
+  if (existente) existente.cantidad += Number(cantidad);
+  else carrito.lineas.push({ equipoId, cantidad: Number(cantidad) });
+  if (fechaInicio) carrito.fechaInicio = fechaInicio;
+  if (fechaFin) carrito.fechaFin = fechaFin;
+  return guardarCarrito(carrito);
+}
+
+// cambios: { lineas?, fechaInicio?, fechaFin? }  (lo que no venga se queda igual)
+export function actualizarCarrito(cambios) {
+  return guardarCarrito({ ...obtenerCarrito(), ...cambios });
+}
+
+export function quitarDelCarrito(equipoId) {
+  const carrito = obtenerCarrito();
+  carrito.lineas = carrito.lineas.filter((l) => l.equipoId !== equipoId);
+  return guardarCarrito(carrito);
+}
+
+// Llamarla después de guardarCotizacion({ origen: 'web', ... }) cuando sí se guardó.
+export function vaciarCarrito() {
+  return guardarCarrito(structuredClone(CARRITO_VACIO));
+}

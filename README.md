@@ -24,7 +24,7 @@ En `/admin/cotizaciones` hay un botón "Reiniciar datos de prueba".
 |---|---|---|---|
 | `/` | Catálogo de equipos | Héctor | feature/catalogo |
 | `/equipos/:id` | Detalle del equipo | Héctor | feature/catalogo |
-| `/cotizar` | Solicitar cotización (web) | Cris | feature/cotizacion-web |
+| `/cotizar` | Mi cotización (web, varios equipos) | Cris | feature/cotizacion-web |
 | `/admin/cotizaciones` | Lista de cotizaciones | Base | — |
 | `/admin/cotizaciones/nueva` | Crear cotización desde el panel | Katia | feature/cotizacion-panel |
 | `/admin/cotizaciones/:id/editar` | Modificar cotización | Cris | feature/cotizacion-web |
