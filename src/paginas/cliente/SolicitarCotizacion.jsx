@@ -3,7 +3,8 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import FormularioCliente, { CLIENTE_VACIO, validarFormularioCliente } from '../../componentes/FormularioCliente.jsx';
 import DesgloseCostos from '../../componentes/DesgloseCostos.jsx';
-import { calcularCotizacion } from '../../logica/calcularCotizacion.js';
+import { TarjetaFechas } from '../../componentes/CamposCotizacion.jsx';
+import { calcularCotizacionSegura } from '../../logica/calcularCotizacion.js';
 import {
   obtenerCarrito, obtenerEquipo, actualizarCarrito, quitarDelCarrito, vaciarCarrito, guardarCotizacion,
 } from '../../servicios/almacen.js';
@@ -45,19 +46,11 @@ export default function SolicitarCotizacion() {
     const lineas = carrito.lineas.map((l) => (l.equipoId === equipoId ? { ...l, cantidad } : l));
     setCarrito(actualizarCarrito({ lineas }));
   };
-  const cambiarFecha = (campo, valor) => setCarrito(actualizarCarrito({ [campo]: valor }));
+  const cambiarFechas = (cambios) => setCarrito(actualizarCarrito(cambios));
   const quitar = (equipoId) => setCarrito(quitarDelCarrito(equipoId));
 
   const { lineas, fechaInicio, fechaFin } = carrito;
-  let desglose = null;
-  let errorCalculo = '';
-  if (fechaInicio && fechaFin) {
-    try {
-      desglose = calcularCotizacion({ lineas, fechaInicio, fechaFin, municipio: cliente.municipio });
-    } catch (e) {
-      errorCalculo = e.message;
-    }
-  }
+  const { desglose, error: errorCalculo } = calcularCotizacionSegura({ lineas, fechaInicio, fechaFin, municipio: cliente.municipio });
 
   const enviar = () => {
     setMensaje('');
@@ -112,22 +105,12 @@ export default function SolicitarCotizacion() {
         </table>
       </div>
 
-      <div className="tarjeta">
-        <h2>Fechas de renta</h2>
+      <TarjetaFechas fechaInicio={fechaInicio} fechaFin={fechaFin} onChange={cambiarFechas}>
         <p className="sutil" style={{ marginBottom: 12 }}>
           Estas fechas aplican a todos los equipos de la cotización. Si necesitas equipos en fechas distintas,
           envía una solicitud por cada periodo.
         </p>
-        <div className="form-grid">
-          <label>Fecha de inicio
-            <input type="date" value={fechaInicio} onChange={(e) => cambiarFecha('fechaInicio', e.target.value)} />
-          </label>
-          <label>Fecha de fin
-            <input type="date" min={fechaInicio || undefined} value={fechaFin}
-              onChange={(e) => cambiarFecha('fechaFin', e.target.value)} />
-          </label>
-        </div>
-      </div>
+      </TarjetaFechas>
 
       <div className="tarjeta">
         <h2>Tus datos</h2>

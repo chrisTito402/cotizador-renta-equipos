@@ -1,35 +1,59 @@
 // DUEÑO: Cris · RAMA: feature/cotizacion-web
 import { useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import FormularioCliente, { CLIENTE_VACIO, validarFormularioCliente } from '../../componentes/FormularioCliente.jsx';
-import SelectorEquipos from '../../componentes/SelectorEquipos.jsx';
+import { validarFormularioCliente } from '../../componentes/FormularioCliente.jsx';
+import CamposCotizacion from '../../componentes/CamposCotizacion.jsx';
 import DesgloseCostos from '../../componentes/DesgloseCostos.jsx';
-import { calcularCotizacion } from '../../logica/calcularCotizacion.js';
+import { calcularCotizacionSegura } from '../../logica/calcularCotizacion.js';
 import { ESTADOS } from '../../constantes.js';
-import { obtenerCotizacion, obtenerEquipo, obtenerEquipos, modificarCotizacion } from '../../servicios/almacen.js';
+import { obtenerCotizacion, obtenerEquipo, modificarCotizacion } from '../../servicios/almacen.js';
 import { fechaCorta } from '../../utilidades/formato.js';
 
 const separado = { display: 'flex', flexDirection: 'column', gap: 16 };
 
-// Recalcula para mostrar; si algo está mal regresa el mensaje en vez de tronar.
-function desgloseSeguro({ lineas, fechaInicio, fechaFin, municipio }) {
-  const conEquipo = lineas.filter((l) => l.equipoId);
-  if (conEquipo.length === 0 || !fechaInicio || !fechaFin) return { desglose: null, error: '' };
-  try {
-    return { desglose: calcularCotizacion({ lineas: conEquipo, fechaInicio, fechaFin, municipio }), error: '' };
-  } catch (e) {
-    return { desglose: null, error: e.message };
-  }
+function SoloLectura({ cotizacion }) {
+  const { cliente } = cotizacion;
+  const desglose = cotizacion.desglose
+    || calcularCotizacionSegura({ ...cotizacion, municipio: cliente.municipio }).desglose;
+  return (
+    <section style={separado}>
+      <div className="encabezado">
+        <div>
+          <h1>Cotización <span className="folio">{cotizacion.id}</span></h1>
+          <p className="sutil">Solo lectura</p>
+        </div>
+        <Link className="boton boton-secundario" to="/admin/cotizaciones">Volver a la lista</Link>
+      </div>
+      <p className="tarjeta" role="alert" style={{ background: 'var(--ambar-suave)', color: 'var(--ambar)', margin: 0 }}>
+        Esta cotización ya está {cotizacion.estado} y no se puede modificar.
+      </p>
+      <div className="tarjeta" style={separado}>
+        <h2>Cliente</h2>
+        <p style={{ margin: 0 }}>{cliente.nombreCompleto} · {cliente.telefono} · {cliente.correo} · {cliente.municipio}</p>
+        <h2>Equipos</h2>
+        <ul style={{ margin: 0 }}>
+          {cotizacion.lineas.map((l) => (
+            <li key={l.equipoId}>{obtenerEquipo(l.equipoId)?.nombre || l.equipoId} × {l.cantidad}</li>
+          ))}
+        </ul>
+        <h2>Fechas</h2>
+        <p style={{ margin: 0 }}>Del {fechaCorta(cotizacion.fechaInicio)} al {fechaCorta(cotizacion.fechaFin)}</p>
+      </div>
+      <div className="tarjeta">
+        <h2>Costos</h2>
+        <DesgloseCostos desglose={desglose} />
+      </div>
+    </section>
+  );
 }
 
 export default function EditarCotizacion() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [cotizacion] = useState(() => obtenerCotizacion(id));
-  const [lineas, setLineas] = useState(cotizacion ? cotizacion.lineas : []);
-  const [fechaInicio, setFechaInicio] = useState(cotizacion ? cotizacion.fechaInicio : '');
-  const [fechaFin, setFechaFin] = useState(cotizacion ? cotizacion.fechaFin : '');
-  const [cliente, setCliente] = useState(cotizacion ? cotizacion.cliente : CLIENTE_VACIO);
+  const [datos, setDatos] = useState(() => (cotizacion
+    ? { lineas: cotizacion.lineas, fechaInicio: cotizacion.fechaInicio, fechaFin: cotizacion.fechaFin, cliente: cotizacion.cliente }
+    : null));
   const [errores, setErrores] = useState({});
   const [mensaje, setMensaje] = useState('');
 
@@ -42,52 +66,16 @@ export default function EditarCotizacion() {
       </section>
     );
   }
-
-  const { desglose, error: errorCalculo } = desgloseSeguro({ lineas, fechaInicio, fechaFin, municipio: cliente.municipio });
-
-  if (cotizacion.estado !== ESTADOS.PENDIENTE) {
-    return (
-      <section style={separado}>
-        <div className="encabezado">
-          <div>
-            <h1>Cotización <span className="folio">{cotizacion.id}</span></h1>
-            <p className="sutil">Solo lectura</p>
-          </div>
-          <Link className="boton boton-secundario" to="/admin/cotizaciones">Volver a la lista</Link>
-        </div>
-        <p className="tarjeta" role="alert" style={{ background: 'var(--ambar-suave)', color: 'var(--ambar)', margin: 0 }}>
-          Esta cotización ya está {cotizacion.estado} y no se puede modificar.
-        </p>
-        <div className="tarjeta" style={separado}>
-          <h2>Cliente</h2>
-          <p style={{ margin: 0 }}>
-            {cotizacion.cliente.nombreCompleto} · {cotizacion.cliente.telefono} · {cotizacion.cliente.correo} · {cotizacion.cliente.municipio}
-          </p>
-          <h2>Equipos</h2>
-          <ul style={{ margin: 0 }}>
-            {cotizacion.lineas.map((l) => (
-              <li key={l.equipoId}>{obtenerEquipo(l.equipoId)?.nombre || l.equipoId} × {l.cantidad}</li>
-            ))}
-          </ul>
-          <h2>Fechas</h2>
-          <p style={{ margin: 0 }}>Del {fechaCorta(cotizacion.fechaInicio)} al {fechaCorta(cotizacion.fechaFin)}</p>
-        </div>
-        <div className="tarjeta">
-          <h2>Costos</h2>
-          <DesgloseCostos desglose={cotizacion.desglose || desglose} />
-        </div>
-      </section>
-    );
-  }
+  if (cotizacion.estado !== ESTADOS.PENDIENTE) return <SoloLectura cotizacion={cotizacion} />;
 
   const guardar = () => {
     setMensaje('');
-    const validacion = validarFormularioCliente(cliente);
+    const validacion = validarFormularioCliente(datos.cliente);
     setErrores(validacion.errores);
     if (!validacion.valido) return;
 
     try {
-      modificarCotizacion(id, { cliente, lineas, fechaInicio, fechaFin });
+      modificarCotizacion(id, datos);
       navigate('/admin/cotizaciones');
     } catch (e) {
       if (e.errores) setErrores(e.errores);
@@ -104,34 +92,7 @@ export default function EditarCotizacion() {
         </div>
       </div>
 
-      <div className="tarjeta">
-        <h2>Equipos</h2>
-        <SelectorEquipos equipos={obtenerEquipos()} lineas={lineas} onChange={setLineas} />
-      </div>
-
-      <div className="tarjeta">
-        <h2>Fechas de renta</h2>
-        <div className="form-grid">
-          <label>Fecha de inicio
-            <input type="date" value={fechaInicio} onChange={(e) => setFechaInicio(e.target.value)} />
-          </label>
-          <label>Fecha de fin
-            <input type="date" min={fechaInicio || undefined} value={fechaFin} onChange={(e) => setFechaFin(e.target.value)} />
-          </label>
-        </div>
-      </div>
-
-      <div className="tarjeta">
-        <h2>Cliente</h2>
-        <FormularioCliente valor={cliente} onChange={setCliente} errores={errores} />
-      </div>
-
-      <div className="tarjeta">
-        <h2>Costos</h2>
-        {desglose && <DesgloseCostos desglose={desglose} />}
-        {errorCalculo && <p className="error">{errorCalculo}</p>}
-        {!desglose && !errorCalculo && <p className="sutil">Elige al menos un equipo y las fechas para ver el costo.</p>}
-      </div>
+      <CamposCotizacion valor={datos} onChange={(cambios) => setDatos((d) => ({ ...d, ...cambios }))} errores={errores} />
 
       {mensaje && <p className="error" role="alert">{mensaje}</p>}
       <div style={{ display: 'flex', gap: 12 }}>
