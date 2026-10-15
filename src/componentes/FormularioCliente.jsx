@@ -45,7 +45,10 @@ export default function FormularioCliente({ valor, onChange, errores = {} }) {
         <input
           value={valor.telefono}
           onChange={cambiar('telefono')}
-          placeholder="644 123 4567"
+          type="tel"
+          inputMode="numeric"
+          maxLength={10}
+          placeholder="6441234567"
           className={errores.telefono ? 'invalido' : ''}
         />
         {errores.telefono && <span className="msg-error">{errores.telefono}</span>}
@@ -54,6 +57,7 @@ export default function FormularioCliente({ valor, onChange, errores = {} }) {
         <input
           value={valor.correo}
           onChange={cambiar('correo')}
+          type="email"
           placeholder="tu@correo.com"
           className={errores.correo ? 'invalido' : ''}
         />
