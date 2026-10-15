@@ -20,9 +20,10 @@
 //   errores:  { campo: 'mensaje' } para pintar cada campo en rojo
 //
 // La validación vive en logica/validarCliente.js (también de Katia). Aquí se reexporta con este nombre.
-// Pinta en rojo los campos que traen error.
+// Pinta en rojo los campos que traen error. El teléfono solo acepta números.
 import { MUNICIPIOS } from '../constantes.js';
-import { validarCliente } from '../logica/validarCliente.js';
+import { validarCliente, MAX_NOMBRE, MAX_CORREO } from '../logica/validarCliente.js';
+import './formularioCliente.css';
 
 export const CLIENTE_VACIO = { nombreCompleto: '', telefono: '', correo: '', municipio: '' };
 export const validarFormularioCliente = validarCliente;
@@ -30,50 +31,65 @@ export const validarFormularioCliente = validarCliente;
 export default function FormularioCliente({ valor, onChange, errores = {} }) {
   const cambiar = (campo) => (e) => onChange({ ...valor, [campo]: e.target.value });
 
+  const cambiarTelefono = (e) => {
+    const soloNumeros = e.target.value.replace(/\D/g, '').slice(0, 10);
+    onChange({ ...valor, telefono: soloNumeros });
+  };
+
   return (
-    <div className="form-grid">
-      <label>Nombre completo
-        <input
-          value={valor.nombreCompleto}
-          onChange={cambiar('nombreCompleto')}
-          placeholder="Ej. Juan Pérez López"
-          className={errores.nombreCompleto ? 'invalido' : ''}
-        />
-        {errores.nombreCompleto && <span className="msg-error">{errores.nombreCompleto}</span>}
-      </label>
-      <label>Teléfono (WhatsApp)
-        <input
-          value={valor.telefono}
-          onChange={cambiar('telefono')}
-          type="tel"
-          inputMode="numeric"
-          maxLength={10}
-          placeholder="6441234567"
-          className={errores.telefono ? 'invalido' : ''}
-        />
-        {errores.telefono && <span className="msg-error">{errores.telefono}</span>}
-      </label>
-      <label>Correo electrónico
-        <input
-          value={valor.correo}
-          onChange={cambiar('correo')}
-          type="email"
-          placeholder="tu@correo.com"
-          className={errores.correo ? 'invalido' : ''}
-        />
-        {errores.correo && <span className="msg-error">{errores.correo}</span>}
-      </label>
-      <label>Municipio de entrega
-        <select
-          value={valor.municipio}
-          onChange={cambiar('municipio')}
-          className={errores.municipio ? 'invalido' : ''}
-        >
-          <option value="">Elige un municipio</option>
-          {MUNICIPIOS.map((m) => <option key={m}>{m}</option>)}
-        </select>
-        {errores.municipio && <span className="msg-error">{errores.municipio}</span>}
-      </label>
+    <div className="formulario-cliente">
+      <p className="aviso">Todos los campos son obligatorios.</p>
+      <div className="campos">
+        <label className="campo-ancho">Nombre completo
+          <input
+            value={valor.nombreCompleto}
+            onChange={cambiar('nombreCompleto')}
+            maxLength={MAX_NOMBRE}
+            autoComplete="name"
+            placeholder="Ej. Juan Pérez López"
+            className={errores.nombreCompleto ? 'invalido' : ''}
+          />
+          {errores.nombreCompleto && <span className="msg-error">{errores.nombreCompleto}</span>}
+        </label>
+        <label>Teléfono (WhatsApp)
+          <input
+            value={valor.telefono}
+            onChange={cambiarTelefono}
+            type="tel"
+            inputMode="numeric"
+            maxLength={10}
+            autoComplete="tel"
+            placeholder="6441234567"
+            className={errores.telefono ? 'invalido' : ''}
+          />
+          {errores.telefono && <span className="msg-error">{errores.telefono}</span>}
+          <span className="nota">10 dígitos con lada, sin +52.</span>
+        </label>
+        <label>Correo electrónico
+          <input
+            value={valor.correo}
+            onChange={cambiar('correo')}
+            type="email"
+            maxLength={MAX_CORREO}
+            autoComplete="email"
+            placeholder="tu@correo.com"
+            className={errores.correo ? 'invalido' : ''}
+          />
+          {errores.correo && <span className="msg-error">{errores.correo}</span>}
+        </label>
+        <label className="campo-ancho">Municipio de entrega
+          <select
+            value={valor.municipio}
+            onChange={cambiar('municipio')}
+            className={errores.municipio ? 'invalido' : ''}
+          >
+            <option value="">Elige un municipio</option>
+            {MUNICIPIOS.map((m) => <option key={m}>{m}</option>)}
+          </select>
+          {errores.municipio && <span className="msg-error">{errores.municipio}</span>}
+          <span className="nota">La tarifa de envío cambia según el municipio y se suma al total.</span>
+        </label>
+      </div>
     </div>
   );
 }
