@@ -103,9 +103,6 @@
 }
 
 @media (max-width: 600px) {
-  .cliente-header { flex-wrap: wrap; gap: 12px; padding: 16px; }
-  .cliente-header > div { flex-wrap: wrap; }
-  .cliente-main { padding: 16px; }
   .catalogo-encabezado,
   .detalle-encabezado { align-items: flex-start; flex-direction: column; }
   .catalogo-contador { align-items: center; flex-direction: row; }
