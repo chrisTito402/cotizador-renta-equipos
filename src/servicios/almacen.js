@@ -34,17 +34,7 @@ export const obtenerCotizacion = (id) => leer().find((c) => c.id === id) || null
 // Lanza un Error si algo está mal; si es el cliente, el error trae .errores por campo.
 export function guardarCotizacion({ origen, cliente, lineas, fechaInicio, fechaFin }) {
   if (!Object.values(ORIGENES).includes(origen)) throw new Error('origen debe ser "web" o "panel"');
-  const lineasValidas = (lineas || []).filter((l) => l.equipoId);
-  if (lineasValidas.length === 0) throw new Error('Selecciona al menos un equipo');
-
-  const validacion = validarCliente(cliente || {});
-  if (!validacion.valido) {
-    const error = new Error('Revisa los datos del cliente');
-    error.errores = validacion.errores;
-    throw error;
-  }
-
-  const desglose = calcularCotizacion({ lineas: lineasValidas, fechaInicio, fechaFin, municipio: cliente.municipio });
+  const { lineasValidas, desglose } = validarYCalcular({ cliente, lineas, fechaInicio, fechaFin });
   const lista = leer();
   const nueva = {
     id: `COT-${String(lista.length + 1).padStart(4, '0')}`,
@@ -68,10 +58,37 @@ export function guardarCotizacion({ origen, cliente, lineas, fechaInicio, fechaF
 //   - Solo si estado === 'Pendiente'; si no, lanzar Error.
 //   - Mismas validaciones que guardarCotizacion, recalcular desglose y guardar.
 //   - Regresa la cotización actualizada.
-// VERSIÓN FALSA: lanza error.
 // ============================================================
 export function modificarCotizacion(id, cambios) {
-  throw new Error('Modificar cotización: pendiente (Cris)');
+  const lista = leer();
+  const indice = lista.findIndex((c) => c.id === id);
+  if (indice === -1) throw new Error(`No existe la cotización ${id}`);
+  const actual = lista[indice];
+  if (actual.estado !== ESTADOS.PENDIENTE) throw new Error('Solo se pueden modificar cotizaciones pendientes');
+
+  const { cliente, lineas, fechaInicio, fechaFin } = { ...actual, ...cambios };
+  const { lineasValidas, desglose } = validarYCalcular({ cliente, lineas, fechaInicio, fechaFin });
+  // id, origen, estado y fechaCreacion no cambian
+  const actualizada = { ...actual, cliente, lineas: lineasValidas, fechaInicio, fechaFin, desglose };
+  lista[indice] = actualizada;
+  escribir(lista);
+  return actualizada;
+}
+
+// Validaciones compartidas por guardar y modificar. Lanza Error; si es el cliente, trae .errores por campo.
+function validarYCalcular({ cliente, lineas, fechaInicio, fechaFin }) {
+  const lineasValidas = (lineas || []).filter((l) => l.equipoId);
+  if (lineasValidas.length === 0) throw new Error('Selecciona al menos un equipo');
+
+  const validacion = validarCliente(cliente || {});
+  if (!validacion.valido) {
+    const error = new Error('Revisa los datos del cliente');
+    error.errores = validacion.errores;
+    throw error;
+  }
+
+  const desglose = calcularCotizacion({ lineas: lineasValidas, fechaInicio, fechaFin, municipio: cliente.municipio });
+  return { lineasValidas, desglose };
 }
 
 export function reiniciarDatos() {
