@@ -23,7 +23,7 @@ export default function Catalogo() {
           <h1>Catálogo de equipos</h1>
           <p className="sutil">Encuentra el equipo que necesitas para tu renta.</p>
         </div>
-        <div className="catalogo-contador"><strong>{equipos.length}</strong><span>equipos en el catálogo</span></div>
+        <div className="catalogo-contador"><strong>{equipos.length}</strong><span>resultados</span></div>
       </header>
 
       <section className="tarjeta catalogo-filtros" aria-label="Filtros del catálogo">

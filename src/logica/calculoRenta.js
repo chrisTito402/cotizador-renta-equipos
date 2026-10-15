@@ -57,6 +57,9 @@ export function calcularRenta(lineas, fechaInicio, fechaFin) {
     if ((typeof cantidadOriginal !== 'number' && typeof cantidadOriginal !== 'string') || !Number.isFinite(cantidad) || cantidad < 1) {
       throw new Error(`La cantidad del equipo ${equipoId} debe ser un número de al menos 1`);
     }
+    if (!Number.isInteger(cantidad)) {
+      throw new Error(`La cantidad del equipo ${equipoId} debe ser un número entero`);
+    }
 
     return {
       equipoId,
