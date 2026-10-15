@@ -20,7 +20,7 @@
 //   errores:  { campo: 'mensaje' } para pintar cada campo en rojo
 //
 // La validación vive en logica/validarCliente.js (también de Katia). Aquí se reexporta con este nombre.
-// VERSIÓN FALSA: muestra los campos sin pintar errores.
+// Pinta en rojo los campos que traen error.
 import { MUNICIPIOS } from '../constantes.js';
 import { validarCliente } from '../logica/validarCliente.js';
 
@@ -33,19 +33,46 @@ export default function FormularioCliente({ valor, onChange, errores = {} }) {
   return (
     <div className="form-grid">
       <label>Nombre completo
-        <input value={valor.nombreCompleto} onChange={cambiar('nombreCompleto')} />
+        <input
+          value={valor.nombreCompleto}
+          onChange={cambiar('nombreCompleto')}
+          placeholder="Ej. Juan Pérez López"
+          className={errores.nombreCompleto ? 'invalido' : ''}
+        />
+        {errores.nombreCompleto && <span className="msg-error">{errores.nombreCompleto}</span>}
       </label>
-      <label>Teléfono
-        <input value={valor.telefono} onChange={cambiar('telefono')} />
+      <label>Teléfono (WhatsApp)
+        <input
+          value={valor.telefono}
+          onChange={cambiar('telefono')}
+          type="tel"
+          inputMode="numeric"
+          maxLength={10}
+          placeholder="6441234567"
+          className={errores.telefono ? 'invalido' : ''}
+        />
+        {errores.telefono && <span className="msg-error">{errores.telefono}</span>}
       </label>
-      <label>Correo
-        <input value={valor.correo} onChange={cambiar('correo')} />
+      <label>Correo electrónico
+        <input
+          value={valor.correo}
+          onChange={cambiar('correo')}
+          type="email"
+          placeholder="tu@correo.com"
+          className={errores.correo ? 'invalido' : ''}
+        />
+        {errores.correo && <span className="msg-error">{errores.correo}</span>}
       </label>
       <label>Municipio de entrega
-        <select value={valor.municipio} onChange={cambiar('municipio')}>
-          <option value="">Selecciona…</option>
+        <select
+          value={valor.municipio}
+          onChange={cambiar('municipio')}
+          className={errores.municipio ? 'invalido' : ''}
+        >
+          <option value="">Elige un municipio</option>
           {MUNICIPIOS.map((m) => <option key={m}>{m}</option>)}
         </select>
+        {errores.municipio && <span className="msg-error">{errores.municipio}</span>}
       </label>
     </div>
   );

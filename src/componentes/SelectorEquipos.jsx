@@ -18,13 +18,49 @@
 //
 // Debe permitir: elegir equipo, cambiar cantidad (mínimo 1), agregar otra línea y quitar una línea.
 //
-// VERSIÓN FALSA: solo muestra las líneas como texto.
+
 export default function SelectorEquipos({ equipos = [], lineas = [], onChange }) {
+  const cambiarLinea = (i, campo, valor) => {
+    const nuevas = lineas.map((l, j) => (j === i ? { ...l, [campo]: valor } : l));
+    onChange(nuevas);
+  };
+
+  const agregarLinea = () => {
+    onChange([...lineas, { equipoId: '', cantidad: 1 }]);
+  };
+
+  const quitarLinea = (i) => {
+    onChange(lineas.filter((l, j) => j !== i));
+  };
+
   return (
-    <ul>
+    <div>
       {lineas.map((l, i) => (
-        <li key={i}>{l.equipoId || '(sin equipo)'} × {l.cantidad}</li>
+        <div key={i} className="linea-equipo">
+          <select value={l.equipoId} onChange={(e) => cambiarLinea(i, 'equipoId', e.target.value)}>
+            <option value="">Selecciona...</option>
+            {equipos.map((eq) => (
+              <option
+                key={eq.id}
+                value={eq.id}
+                disabled={!eq.disponible || lineas.some((otra, j) => j !== i && otra.equipoId === eq.id)}
+              >
+                {eq.nombre} · ${eq.precioPorDia}/día{eq.disponible ? '' : ' (no disponible)'}
+              </option>
+            ))}
+          </select>
+          <input
+            type="number"
+            min="1"
+            value={l.cantidad}
+            onChange={(e) => cambiarLinea(i, 'cantidad', Math.max(1, Number(e.target.value) || 1))}
+          />
+          <button type="button" onClick={() => quitarLinea(i)} disabled={lineas.length === 1}>
+            Quitar
+          </button>
+        </div>
       ))}
-    </ul>
+      <button type="button" onClick={agregarLinea}>+ Agregar equipo</button>
+    </div>
   );
 }
