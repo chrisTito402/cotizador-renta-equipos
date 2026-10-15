@@ -40,7 +40,11 @@ export default function SelectorEquipos({ equipos = [], lineas = [], onChange })
           <select value={l.equipoId} onChange={(e) => cambiarLinea(i, 'equipoId', e.target.value)}>
             <option value="">Selecciona...</option>
             {equipos.map((eq) => (
-              <option key={eq.id} value={eq.id} disabled={!eq.disponible}>
+              <option
+                key={eq.id}
+                value={eq.id}
+                disabled={!eq.disponible || lineas.some((otra, j) => j !== i && otra.equipoId === eq.id)}
+              >
                 {eq.nombre} · ${eq.precioPorDia}/día{eq.disponible ? '' : ' (no disponible)'}
               </option>
             ))}
