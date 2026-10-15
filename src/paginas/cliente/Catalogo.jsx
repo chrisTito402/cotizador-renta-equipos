@@ -7,7 +7,7 @@ export default function Catalogo() {
     <Pendiente titulo="Catálogo de equipos" duenio="Héctor" rama="feature/catalogo">
       <p>Búsqueda por nombre o modelo, filtros por tipo, disponibilidad y fechas, y tarjetas de equipo que llevan a <code>/equipos/:id</code>.</p>
       <p>Enlaces temporales para que los demás prueben mientras tanto:</p>
-      <p><Link to="/equipos/EQ-003">Detalle de EQ-003</Link> · <Link to="/cotizar?equipo=EQ-003&cantidad=1&inicio=2026-10-20&fin=2026-10-22">Cotizar EQ-003</Link></p>
+      <p><Link to="/equipos/EQ-003">Detalle de EQ-003</Link> · <Link to="/equipos/EQ-001">Detalle de EQ-001</Link> · <Link to="/cotizar">Mi cotización</Link></p>
     </Pendiente>
   );
 }
