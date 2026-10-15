@@ -16,17 +16,60 @@
 // Reglas acordadas:
 //   - Se cuentan inicio y fin: del 14 al 16 son 3 días. Mismo día = 1 día.
 //   - importe = cantidad × precioPorDia × dias ;  subtotalRenta = suma de importes
-//   - Equipo inexistente, cantidad < 1, o fechaFin antes que fechaInicio → lanzar Error con mensaje claro.
+//   - Equipo inexistente, cantidad no numérica o < 1, fechas ausentes o invertidas → lanzar Error.
 //   - Los precios salen de EQUIPOS (import { EQUIPOS } from '../datos/equipos.js').
-//
-// VERSIÓN FALSA: valores fijos con la forma correcta.
+
+import { EQUIPOS } from '../datos/equipos.js';
+
+function fechaUTC(texto) {
+  if (typeof texto !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(texto)) {
+    throw new Error('Las fechas deben tener el formato AAAA-MM-DD');
+  }
+
+  const [anio, mes, dia] = texto.split('-').map(Number);
+  const fecha = new Date(Date.UTC(anio, mes - 1, dia));
+  if (anio < 100) fecha.setUTCFullYear(anio);
+
+  if (anio < 1 || fecha.getUTCFullYear() !== anio || fecha.getUTCMonth() + 1 !== mes || fecha.getUTCDate() !== dia) {
+    throw new Error(`Fecha inválida: ${texto}`);
+  }
+
+  return fecha.getTime();
+}
 
 export function calcularRenta(lineas, fechaInicio, fechaFin) {
+  if (!fechaInicio || !fechaFin) {
+    throw new Error('Indica la fecha de inicio y la fecha de fin');
+  }
+
+  const inicioUTC = fechaUTC(fechaInicio);
+  const finUTC = fechaUTC(fechaFin);
+  if (finUTC < inicioUTC) {
+    throw new Error('La fecha de fin no puede ser anterior a la fecha de inicio');
+  }
+
+  const dias = (finUTC - inicioUTC) / 86400000 + 1;
+  const detalle = lineas.map(({ equipoId, cantidad: cantidadOriginal }) => {
+    const equipo = EQUIPOS.find((e) => e.id === equipoId);
+    if (!equipo) throw new Error(`No existe el equipo ${equipoId}`);
+
+    const cantidad = Number(cantidadOriginal);
+    if ((typeof cantidadOriginal !== 'number' && typeof cantidadOriginal !== 'string') || !Number.isFinite(cantidad) || cantidad < 1) {
+      throw new Error(`La cantidad del equipo ${equipoId} debe ser un número de al menos 1`);
+    }
+
+    return {
+      equipoId,
+      nombre: equipo.nombre,
+      cantidad,
+      precioPorDia: equipo.precioPorDia,
+      importe: cantidad * equipo.precioPorDia * dias,
+    };
+  });
+
   return {
-    dias: 3,
-    lineas: lineas.map((l) => ({
-      equipoId: l.equipoId, nombre: 'Equipo de prueba', cantidad: l.cantidad, precioPorDia: 1000, importe: 3000 * l.cantidad,
-    })),
-    subtotalRenta: 3000 * lineas.reduce((s, l) => s + Number(l.cantidad), 0),
+    dias,
+    lineas: detalle,
+    subtotalRenta: detalle.reduce((subtotal, linea) => subtotal + linea.importe, 0),
   };
 }
