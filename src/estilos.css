@@ -74,3 +74,10 @@ input.invalido, select.invalido { border-color: var(--rojo); }
 
 .pendiente { background: var(--blanco); border: 2px dashed var(--borde); border-radius: var(--radio); padding: 28px; max-width: 760px; }
 .pendiente p { line-height: 1.6; }
+
+/* Responsive del layout cliente */
+@media (max-width: 600px) {
+  .cliente-header { flex-wrap: wrap; gap: 12px; padding: 16px; }
+  .cliente-header > div { flex-wrap: wrap; }
+  .cliente-main { padding: 16px; }
+}
