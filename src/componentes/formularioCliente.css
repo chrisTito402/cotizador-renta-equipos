@@ -1,0 +1,14 @@
+/* Formulario del cliente (Katia). Todo va dentro de .formulario-cliente para no afectar otras pantallas. */
+.formulario-cliente .aviso { margin: 0 0 18px; font-size: 14px; color: var(--gris); }
+.formulario-cliente .campos { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 18px 20px; }
+.formulario-cliente .campo-ancho { grid-column: 1 / -1; }
+.formulario-cliente label { gap: 8px; font-weight: 700; }
+
+.formulario-cliente input,
+.formulario-cliente select { height: 48px; padding: 0 14px; border: 1.5px solid #dde2ea; border-radius: 12px; background: #f8fafc; font-size: 15px; }
+.formulario-cliente input:focus,
+.formulario-cliente select:focus { outline: 2px solid var(--naranja); outline-offset: 1px; background: var(--blanco); }
+.formulario-cliente .invalido { border-color: var(--rojo); }
+
+.formulario-cliente .msg-error { font-size: 13px; font-weight: 600; }
+.formulario-cliente .nota { font-size: 13px; font-weight: 400; color: var(--gris); }

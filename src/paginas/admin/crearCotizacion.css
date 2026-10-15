@@ -1,0 +1,30 @@
+/* Pantalla Nueva cotización (Katia). Todo va dentro de .nueva-cotizacion para no afectar otras pantallas. */
+.nueva-cotizacion .volver { display: inline-block; margin-bottom: 10px; font-size: 13px; font-weight: 700; text-decoration: none; }
+
+.nueva-cotizacion .columnas { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(340px, 1fr); gap: 20px; align-items: start; }
+.nueva-cotizacion .columna-principal { display: flex; flex-direction: column; gap: 20px; }
+.nueva-cotizacion .columna-resumen { position: sticky; top: 20px; display: flex; flex-direction: column; gap: 14px; }
+
+.nueva-cotizacion .tarjeta { border-radius: 16px; padding: 22px; }
+.nueva-cotizacion .etiqueta { margin: 0 0 16px; font-size: 12px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--gris); }
+
+.nueva-cotizacion .fechas { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 18px 20px; }
+.nueva-cotizacion .fechas label { gap: 8px; font-weight: 700; }
+.nueva-cotizacion .fechas input { height: 48px; padding: 0 14px; border: 1.5px solid #dde2ea; border-radius: 12px; background: #f8fafc; font-size: 15px; }
+.nueva-cotizacion .fechas input:focus { outline: 2px solid var(--naranja); outline-offset: 1px; background: var(--blanco); }
+.nueva-cotizacion .fechas .invalido { border-color: var(--rojo); }
+
+.nueva-cotizacion .msg-error { font-size: 13px; font-weight: 600; }
+.nueva-cotizacion p.msg-error { margin: 12px 0 0; }
+.nueva-cotizacion .mensaje-general { margin: 0; padding: 10px 14px; border-radius: 10px; background: var(--rojo-suave); }
+
+/* El total del desglose más grande y en naranja, como en el storyboard */
+.nueva-cotizacion .desglose .total { align-items: baseline; }
+.nueva-cotizacion .desglose .total span:last-child { font-size: 26px; font-weight: 800; color: var(--naranja); }
+
+.nueva-cotizacion .boton-guardar { width: 100%; height: 50px; border-radius: 12px; font-size: 16px; }
+
+@media (max-width: 1100px) {
+  .nueva-cotizacion .columnas { grid-template-columns: 1fr; }
+  .nueva-cotizacion .columna-resumen { position: static; }
+}
