@@ -6,3 +6,6 @@ export const MUNICIPIOS = [
   'Cajeme', 'Navojoa', 'Guaymas', 'Empalme', 'Bácum',
   'San Ignacio Río Muerto', 'Etchojoa', 'Huatabampo', 'Hermosillo',
 ];
+// Unidades máximas por línea (igual en la web y en el panel).
+export const MAX_CANTIDAD = 20;
+export const MAX_NOTAS = 500;

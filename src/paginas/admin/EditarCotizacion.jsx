@@ -1,4 +1,4 @@
-// DUEÑO: Cris · RAMA: feature/cotizacion-web
+// DUEÑO: Cris · RAMA: feature/cotizacion-web (fechas por equipo y notas: feature/fechas-por-equipo)
 import { useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { validarFormularioCliente } from '../../componentes/FormularioCliente.jsx';
@@ -6,15 +6,26 @@ import CamposCotizacion from '../../componentes/CamposCotizacion.jsx';
 import DesgloseCostos from '../../componentes/DesgloseCostos.jsx';
 import { calcularCotizacionSegura } from '../../logica/calcularCotizacion.js';
 import { ESTADOS } from '../../constantes.js';
-import { obtenerCotizacion, obtenerEquipo, modificarCotizacion } from '../../servicios/almacen.js';
-import { fechaCorta } from '../../utilidades/formato.js';
+import { obtenerCotizacion, obtenerEquipo, modificarCotizacion, nuevoIdLinea } from '../../servicios/almacen.js';
+import { rangoFechas, textoDias } from '../../utilidades/formato.js';
+import { diasEntre } from '../../utilidades/fechas.js';
 
 const separado = { display: 'flex', flexDirection: 'column', gap: 16 };
 
+// Cotizaciones de antes traían una sola fecha para todo: cada línea la toma y recibe un id.
+const lineasConFechas = (cotizacion) => cotizacion.lineas.map((l) => ({
+  ...l,
+  id: l.id || nuevoIdLinea(),
+  fechaInicio: l.fechaInicio || cotizacion.fechaInicio,
+  fechaFin: l.fechaFin || cotizacion.fechaFin,
+}));
+
 function SoloLectura({ cotizacion }) {
   const { cliente } = cotizacion;
+  const lineas = lineasConFechas(cotizacion);
+  // Las de prueba no traen desglose guardado: se calcula para mostrarlo
   const desglose = cotizacion.desglose
-    || calcularCotizacionSegura({ ...cotizacion, municipio: cliente.municipio }).desglose;
+    || calcularCotizacionSegura({ lineas, municipio: cliente.municipio }).desglose;
   return (
     <section style={separado}>
       <div className="encabezado">
@@ -32,12 +43,18 @@ function SoloLectura({ cotizacion }) {
         <p style={{ margin: 0 }}>{cliente.nombreCompleto} · {cliente.telefono} · {cliente.correo} · {cliente.municipio}</p>
         <h2>Equipos</h2>
         <ul style={{ margin: 0 }}>
-          {cotizacion.lineas.map((l) => (
-            <li key={l.equipoId}>{obtenerEquipo(l.equipoId)?.nombre || l.equipoId} × {l.cantidad}</li>
+          {lineas.map((l) => (
+            <li key={l.id}>
+              {obtenerEquipo(l.equipoId)?.nombre || l.equipoId} × {l.cantidad} · {rangoFechas(l.fechaInicio, l.fechaFin)} ({textoDias(diasEntre(l.fechaInicio, l.fechaFin))})
+            </li>
           ))}
         </ul>
-        <h2>Fechas</h2>
-        <p style={{ margin: 0 }}>Del {fechaCorta(cotizacion.fechaInicio)} al {fechaCorta(cotizacion.fechaFin)}</p>
+        {cotizacion.notas && (
+          <>
+            <h2>Notas de entrega u obra</h2>
+            <p style={{ margin: 0, whiteSpace: 'pre-line' }}>{cotizacion.notas}</p>
+          </>
+        )}
       </div>
       <div className="tarjeta">
         <h2>Costos</h2>
@@ -52,9 +69,10 @@ export default function EditarCotizacion() {
   const navigate = useNavigate();
   const [cotizacion] = useState(() => obtenerCotizacion(id));
   const [datos, setDatos] = useState(() => (cotizacion
-    ? { lineas: cotizacion.lineas, fechaInicio: cotizacion.fechaInicio, fechaFin: cotizacion.fechaFin, cliente: cotizacion.cliente }
+    ? { lineas: lineasConFechas(cotizacion), cliente: cotizacion.cliente, notas: cotizacion.notas || '' }
     : null));
   const [errores, setErrores] = useState({});
+  const [errorLinea, setErrorLinea] = useState(null);
   const [mensaje, setMensaje] = useState('');
 
   if (!cotizacion) {
@@ -70,6 +88,7 @@ export default function EditarCotizacion() {
 
   const guardar = () => {
     setMensaje('');
+    setErrorLinea(null);
     const validacion = validarFormularioCliente(datos.cliente);
     setErrores(validacion.errores);
     if (!validacion.valido) return;
@@ -79,7 +98,8 @@ export default function EditarCotizacion() {
       navigate('/admin/cotizaciones');
     } catch (e) {
       if (e.errores) setErrores(e.errores);
-      else setMensaje(e.message);
+      else if (e.lineaId) setErrorLinea({ id: e.lineaId, mensaje: e.message });
+      setMensaje(e.message);
     }
   };
 
@@ -88,11 +108,16 @@ export default function EditarCotizacion() {
       <div className="encabezado">
         <div>
           <h1>Modificar cotización <span className="folio">{cotizacion.id}</span></h1>
-          <p className="sutil">Cambia equipos, fechas o datos del cliente. El costo se recalcula al guardar.</p>
+          <p className="sutil">Cambia equipos, fechas de cada equipo, datos del cliente o notas. El costo se recalcula al guardar.</p>
         </div>
       </div>
 
-      <CamposCotizacion valor={datos} onChange={(cambios) => setDatos((d) => ({ ...d, ...cambios }))} errores={errores} />
+      <CamposCotizacion
+        valor={datos}
+        onChange={(cambios) => setDatos((d) => ({ ...d, ...cambios }))}
+        errores={errores}
+        errorLinea={errorLinea}
+      />
 
       {mensaje && <p className="error" role="alert">{mensaje}</p>}
       <div style={{ display: 'flex', gap: 12 }}>

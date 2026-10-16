@@ -1,21 +1,23 @@
 // ============================================================
 // DUEÑO: Héctor  ·  RAMA: feature/calculo-renta
-// Nadie más edita este archivo. Función PURA: no usa document ni localStorage.
+// (fechas por línea: rama feature/fechas-por-equipo, con aviso en el grupo)
+// Función PURA: no usa document ni localStorage.
 // ============================================================
 //
 // calcularRenta(lineas, fechaInicio, fechaFin)
 //
 // Recibe:
-//   lineas:      [{ equipoId: 'EQ-003', cantidad: 2 }, ...]
-//   fechaInicio: '2026-10-14'   (texto AAAA-MM-DD, como lo da un <input type="date">)
-//   fechaFin:    '2026-10-16'
+//   lineas: [{ equipoId: 'EQ-003', cantidad: 2, fechaInicio: '2026-10-14', fechaFin: '2026-10-16' }, ...]
+//           Cada línea trae SUS fechas (texto AAAA-MM-DD, como lo da un <input type="date">).
+//   fechaInicio, fechaFin: opcionales. Solo se usan para las líneas que no traen fechas
+//           (cotizaciones viejas que tenían una sola fecha para todo).
 //
 // Regresa:
-//   { dias: 3, lineas: [{ equipoId, nombre, cantidad, precioPorDia, importe }], subtotalRenta: 10800 }
+//   { lineas: [{ id, equipoId, nombre, cantidad, precioPorDia, fechaInicio, fechaFin, dias, importe }], subtotalRenta: 10800 }
 //
 // Reglas acordadas:
 //   - Se cuentan inicio y fin: del 14 al 16 son 3 días. Mismo día = 1 día.
-//   - importe = cantidad × precioPorDia × dias ;  subtotalRenta = suma de importes
+//   - importe = cantidad × precioPorDia × dias de ESA línea ;  subtotalRenta = suma de importes
 //   - Equipo inexistente, cantidad no numérica o < 1, fechas ausentes o invertidas → lanzar Error.
 //   - Los precios salen de EQUIPOS (import { EQUIPOS } from '../datos/equipos.js').
 
@@ -37,19 +39,21 @@ function fechaUTC(texto) {
   return fecha.getTime();
 }
 
-export function calcularRenta(lineas, fechaInicio, fechaFin) {
+function contarDias(nombre, fechaInicio, fechaFin) {
   if (!fechaInicio || !fechaFin) {
-    throw new Error('Indica la fecha de inicio y la fecha de fin');
+    throw new Error(`Indica la fecha de inicio y la fecha de fin de ${nombre}`);
   }
-
   const inicioUTC = fechaUTC(fechaInicio);
   const finUTC = fechaUTC(fechaFin);
   if (finUTC < inicioUTC) {
-    throw new Error('La fecha de fin no puede ser anterior a la fecha de inicio');
+    throw new Error(`${nombre}: la fecha de fin no puede ser anterior a la fecha de inicio`);
   }
+  return (finUTC - inicioUTC) / 86400000 + 1;
+}
 
-  const dias = (finUTC - inicioUTC) / 86400000 + 1;
-  const detalle = lineas.map(({ equipoId, cantidad: cantidadOriginal }) => {
+export function calcularRenta(lineas, fechaInicio, fechaFin) {
+  const detalle = lineas.map((linea) => {
+    const { id, equipoId, cantidad: cantidadOriginal } = linea;
     const equipo = EQUIPOS.find((e) => e.id === equipoId);
     if (!equipo) throw new Error(`No existe el equipo ${equipoId}`);
 
@@ -61,17 +65,25 @@ export function calcularRenta(lineas, fechaInicio, fechaFin) {
       throw new Error(`La cantidad del equipo ${equipoId} debe ser un número entero`);
     }
 
+    // La línea manda; las fechas generales solo rellenan lo que falte
+    const inicio = linea.fechaInicio || fechaInicio;
+    const fin = linea.fechaFin || fechaFin;
+    const dias = contarDias(equipo.nombre, inicio, fin);
+
     return {
+      id,
       equipoId,
       nombre: equipo.nombre,
       cantidad,
       precioPorDia: equipo.precioPorDia,
+      fechaInicio: inicio,
+      fechaFin: fin,
+      dias,
       importe: cantidad * equipo.precioPorDia * dias,
     };
   });
 
   return {
-    dias,
     lineas: detalle,
     subtotalRenta: detalle.reduce((subtotal, linea) => subtotal + linea.importe, 0),
   };
