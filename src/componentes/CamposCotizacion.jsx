@@ -1,5 +1,5 @@
 // ============================================================
-// DUEÑO: Cris · Compartido por Crear cotización (Katia) y Modificar cotización (Cris).
+// DUEÑO: Cris · Lo usa Modificar cotización; TarjetaFechas también Mi cotización (web).
 // Las tarjetas Equipos, Fechas, Cliente y Costos con el desglose en vivo.
 // ============================================================
 //

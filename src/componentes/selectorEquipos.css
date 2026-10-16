@@ -1,0 +1,18 @@
+/* Selector de equipos (Katia). Todo va dentro de .selector-equipos para no afectar otras pantallas. */
+.selector-equipos { display: flex; flex-direction: column; gap: 12px; }
+.selector-equipos .fila-equipo { display: grid; grid-template-columns: minmax(0, 1fr) 110px auto; gap: 12px; align-items: end; padding: 14px; border: 1px solid var(--borde); border-radius: 12px; background: #fafbfc; }
+.selector-equipos label { gap: 6px; font-size: 13px; font-weight: 700; }
+
+.selector-equipos select,
+.selector-equipos input { height: 44px; padding: 0 12px; border: 1.5px solid #dde2ea; border-radius: 10px; background: var(--blanco); font-size: 15px; }
+.selector-equipos select:focus,
+.selector-equipos input:focus { outline: 2px solid var(--naranja); outline-offset: 1px; }
+
+.selector-equipos .boton-quitar { height: 44px; padding: 0 14px; border: 1.5px solid #f3c4c0; border-radius: 10px; background: var(--blanco); color: var(--rojo); font: inherit; font-weight: 600; cursor: pointer; }
+.selector-equipos .boton-agregar { align-self: flex-start; padding: 10px 16px; border: 1px dashed #f5c3a5; border-radius: 10px; background: var(--naranja-suave); color: var(--naranja); font: inherit; font-weight: 700; cursor: pointer; }
+.selector-equipos button:disabled { opacity: .4; cursor: not-allowed; }
+
+@media (max-width: 560px) {
+  .selector-equipos .fila-equipo { grid-template-columns: 1fr auto; }
+  .selector-equipos .campo-equipo { grid-column: 1 / -1; }
+}
