@@ -1,0 +1,34 @@
+.pagina-apartados { display: flex; flex-direction: column; gap: 18px; }
+.pagina-apartados .encabezado { margin-bottom: 0; }
+.apartado-seccion { display: flex; flex-direction: column; gap: 12px; }
+.apartado-seccion h2, .apartado-seccion p { margin-top: 0; margin-bottom: 0; }
+.apartado-subtitulo { display: flex; justify-content: space-between; align-items: center; padding: 18px 18px 0; }
+.apartado-subtitulo p { margin-top: 4px; }
+.acciones-apartado { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
+.aviso-apartados { background: var(--rojo-suave); border-radius: 8px; padding: 10px 12px; }
+.estado-apartado { display: inline-block; background: var(--naranja-suave); color: var(--naranja); white-space: nowrap; }
+.apartado-detalle-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.apartado-detalle-grid h2 { margin-bottom: 14px; }
+.apartado-detalle-grid h3, .subir-carta h3 { font-size: 15px; margin: 18px 0 10px; }
+.datos-apartado { display: grid; grid-template-columns: minmax(100px, .5fr) 1fr; gap: 8px 12px; margin: 0; font-size: 14px; }
+.datos-apartado dt { color: var(--gris); }
+.datos-apartado dd { margin: 0; overflow-wrap: anywhere; }
+.lista-equipos-apartado { margin: 0; padding-left: 20px; line-height: 1.7; }
+.subir-carta { border-top: 1px solid var(--borde); margin-top: 18px; padding-top: 2px; }
+.subir-carta > p { margin: 8px 0; }
+.formulario-carta { display: flex; align-items: end; flex-wrap: wrap; gap: 10px; margin-top: 12px; }
+.formulario-carta label { flex: 1 1 280px; }
+.formulario-carta input { padding: 8px; }
+.carta-guardada { display: flex; align-items: center; flex-wrap: wrap; gap: 4px 14px; font-size: 14px; }
+.carta-guardada p { margin: 0; }
+.nota-almacenamiento { font-size: 12px; margin-top: 10px !important; }
+.seguimiento-apartado { display: flex; align-items: start; justify-content: space-between; flex-wrap: wrap; gap: 16px; }
+.seguimiento-apartado ol { display: flex; flex-wrap: wrap; gap: 8px 24px; padding-left: 22px; margin: 0; }
+.seguimiento-apartado li { color: var(--gris); }
+.seguimiento-apartado li.estado-actual { color: var(--naranja); font-weight: 700; }
+.detalle-apartado-encabezado { align-items: center; }
+
+@media (max-width: 800px) {
+  .apartado-detalle-grid { grid-template-columns: 1fr; }
+  .seguimiento-apartado { flex-direction: column; }
+}

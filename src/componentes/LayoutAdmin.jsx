@@ -11,6 +11,7 @@ export default function LayoutAdmin() {
         <nav>
           <NavLink to="/admin/cotizaciones" end>Cotizaciones</NavLink>
           <NavLink to="/admin/cotizaciones/nueva">Nueva cotización</NavLink>
+          <NavLink to="/admin/apartados">Apartados y rentas</NavLink>
           <NavLink to="/">Ver sitio del cliente</NavLink>
         </nav>
         <div className="sidebar-pie"><strong>Área comercial</strong><span>Administrador</span></div>

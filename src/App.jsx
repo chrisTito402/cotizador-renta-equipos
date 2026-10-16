@@ -11,6 +11,8 @@ import SolicitarCotizacion from './paginas/cliente/SolicitarCotizacion.jsx';
 import Cotizaciones from './paginas/admin/Cotizaciones.jsx';
 import CrearCotizacion from './paginas/admin/CrearCotizacion.jsx';
 import EditarCotizacion from './paginas/admin/EditarCotizacion.jsx';
+import Apartados from './paginas/admin/Apartados.jsx';
+import DetalleApartado from './paginas/admin/DetalleApartado.jsx';
 
 export default function App() {
   return (
@@ -24,6 +26,8 @@ export default function App() {
         <Route path="cotizaciones" element={<Cotizaciones />} />
         <Route path="cotizaciones/nueva" element={<CrearCotizacion />} />
         <Route path="cotizaciones/:id/editar" element={<EditarCotizacion />} />
+        <Route path="apartados" element={<Apartados />} />
+        <Route path="apartados/:id" element={<DetalleApartado />} />
       </Route>
     </Routes>
   );
