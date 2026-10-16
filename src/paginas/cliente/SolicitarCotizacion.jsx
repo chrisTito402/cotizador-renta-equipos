@@ -1,19 +1,131 @@
 // DUEÑO: Cris · RAMA: feature/cotizacion-web
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import Pendiente from '../../componentes/Pendiente.jsx';
-import { obtenerCarrito } from '../../servicios/almacen.js';
+import FormularioCliente, { CLIENTE_VACIO, validarFormularioCliente } from '../../componentes/FormularioCliente.jsx';
+import DesgloseCostos from '../../componentes/DesgloseCostos.jsx';
+import { TarjetaFechas } from '../../componentes/CamposCotizacion.jsx';
+import { calcularCotizacionSegura } from '../../logica/calcularCotizacion.js';
+import {
+  obtenerCarrito, obtenerEquipo, actualizarCarrito, quitarDelCarrito, vaciarCarrito, guardarCotizacion,
+} from '../../servicios/almacen.js';
+import { pesos } from '../../utilidades/formato.js';
+
+const separado = { display: 'flex', flexDirection: 'column', gap: 16 };
 
 export default function SolicitarCotizacion() {
-  const carrito = obtenerCarrito();
+  const [carrito, setCarrito] = useState(obtenerCarrito);
+  const [cliente, setCliente] = useState(CLIENTE_VACIO);
+  const [errores, setErrores] = useState({});
+  const [mensaje, setMensaje] = useState('');
+  const [guardada, setGuardada] = useState(null);
+
+  if (guardada) {
+    return (
+      <div className="tarjeta" style={{ ...separado, maxWidth: 560 }} role="status">
+        <h1>Recibimos tu solicitud</h1>
+        <p>Tu folio es <span className="folio">{guardada.id}</span>.</p>
+        <p>Total estimado: <strong>{pesos(guardada.desglose.total)}</strong></p>
+        <p className="sutil">El área comercial te contactará para confirmar tu renta.</p>
+        <Link className="boton" to="/" style={{ alignSelf: 'flex-start' }}>Volver al catálogo</Link>
+      </div>
+    );
+  }
+
+  if (carrito.lineas.length === 0) {
+    return (
+      <div className="tarjeta" style={{ ...separado, maxWidth: 560 }}>
+        <h1>Mi cotización</h1>
+        <p>Todavía no agregas equipos.</p>
+        <Link className="boton" to="/" style={{ alignSelf: 'flex-start' }}>Ver el catálogo</Link>
+      </div>
+    );
+  }
+
+  const cambiarCantidad = (equipoId, valor) => {
+    const cantidad = Math.max(1, Math.floor(Number(valor)) || 1);
+    const lineas = carrito.lineas.map((l) => (l.equipoId === equipoId ? { ...l, cantidad } : l));
+    setCarrito(actualizarCarrito({ lineas }));
+  };
+  const cambiarFechas = (cambios) => setCarrito(actualizarCarrito(cambios));
+  const quitar = (equipoId) => setCarrito(quitarDelCarrito(equipoId));
+
+  const { lineas, fechaInicio, fechaFin } = carrito;
+  const { desglose, error: errorCalculo } = calcularCotizacionSegura({ lineas, fechaInicio, fechaFin, municipio: cliente.municipio });
+
+  const enviar = () => {
+    setMensaje('');
+    const validacion = validarFormularioCliente(cliente);
+    setErrores(validacion.errores);
+    if (!validacion.valido) return;
+
+    try {
+      const nueva = guardarCotizacion({ origen: 'web', cliente, lineas, fechaInicio, fechaFin });
+      vaciarCarrito();
+      setGuardada(nueva);
+    } catch (e) {
+      if (e.errores) setErrores(e.errores);
+      else setMensaje(e.message);
+    }
+  };
+
   return (
-    <Pendiente titulo="Mi cotización" duenio="Cris" rama="feature/cotizacion-web">
-      <p>Llega con los equipos que el cliente fue agregando (<code>obtenerCarrito()</code> de servicios/almacen.js):</p>
-      <ul>
-        {carrito.lineas.map((l) => <li key={l.equipoId}><code>{l.equipoId}</code> × {l.cantidad}</li>)}
-        {carrito.lineas.length === 0 && <li>(vacía) · <Link to="/equipos/EQ-003">agrega uno desde un detalle</Link></li>}
-      </ul>
-      <p>Fechas: del <code>{carrito.fechaInicio || '—'}</code> al <code>{carrito.fechaFin || '—'}</code>.</p>
-      <p>Cambiar cantidades, quitar equipos y cambiar fechas con <code>actualizarCarrito</code> / <code>quitarDelCarrito</code>. Costo estimado automático, FormularioCliente, DesgloseCostos, enviar con <code>guardarCotizacion({'{'} origen: 'web', … {'}'})</code>, luego <code>vaciarCarrito()</code> y mostrar confirmación.</p>
-    </Pendiente>
+    <section style={separado}>
+      <div className="encabezado">
+        <div>
+          <h1>Mi cotización</h1>
+          <p className="sutil">Revisa tus equipos, elige las fechas y envía tu solicitud.</p>
+        </div>
+        <Link className="boton boton-secundario" to="/">+ Agregar más equipos</Link>
+      </div>
+
+      <div className="tarjeta tabla-wrap">
+        <table>
+          <thead>
+            <tr><th>Equipo</th><th>Precio por día</th><th>Cantidad</th><th aria-label="Acciones" /></tr>
+          </thead>
+          <tbody>
+            {lineas.map((l) => {
+              const equipo = obtenerEquipo(l.equipoId);
+              return (
+                <tr key={l.equipoId}>
+                  <td>{equipo ? equipo.nombre : l.equipoId}</td>
+                  <td>{equipo ? pesos(equipo.precioPorDia) : '—'}</td>
+                  <td>
+                    <input type="number" min="1" step="1" value={l.cantidad} style={{ width: 90 }}
+                      aria-label={`Cantidad de ${equipo ? equipo.nombre : l.equipoId}`}
+                      onChange={(e) => cambiarCantidad(l.equipoId, e.target.value)} />
+                  </td>
+                  <td>
+                    <button type="button" className="boton boton-secundario" onClick={() => quitar(l.equipoId)}>Quitar</button>
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+
+      <TarjetaFechas fechaInicio={fechaInicio} fechaFin={fechaFin} onChange={cambiarFechas}>
+        <p className="sutil" style={{ marginBottom: 12 }}>
+          Estas fechas aplican a todos los equipos de la cotización. Si necesitas equipos en fechas distintas,
+          envía una solicitud por cada periodo.
+        </p>
+      </TarjetaFechas>
+
+      <div className="tarjeta">
+        <h2>Tus datos</h2>
+        <FormularioCliente valor={cliente} onChange={setCliente} errores={errores} />
+      </div>
+
+      <div className="tarjeta">
+        <h2>Costo estimado</h2>
+        {desglose && <DesgloseCostos desglose={desglose} />}
+        {errorCalculo && <p className="error">{errorCalculo}</p>}
+        {!desglose && !errorCalculo && <p className="sutil">Elige las fechas para ver el costo.</p>}
+      </div>
+
+      {mensaje && <p className="error" role="alert">{mensaje}</p>}
+      <button type="button" className="boton" style={{ alignSelf: 'flex-start' }} onClick={enviar}>Enviar solicitud</button>
+    </section>
   );
 }
