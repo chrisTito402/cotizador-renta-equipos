@@ -1,5 +1,10 @@
-// BASE (sin dueño): junta renta + envío. No hace falta editarlo:
-// cuando Héctor y Cris reemplacen sus funciones, esto ya da los números reales.
+// BASE (sin dueño): junta renta + envío.
+// Cada línea trae sus fechas; fechaInicio/fechaFin generales son opcionales
+// (solo rellenan líneas viejas que no traen fechas).
+//
+// Regresa: { lineas, subtotalRenta, costoEnvio, total }   con total = subtotalRenta + costoEnvio
+// Al cliente se le muestra el total (ya con envío) pero no la fila ni el monto del envío;
+// el panel admin sí ve el envío.
 import { calcularRenta } from './calculoRenta.js';
 import { calcularEnvio } from './calculoEnvio.js';
 
@@ -7,7 +12,6 @@ export function calcularCotizacion({ lineas, fechaInicio, fechaFin, municipio })
   const renta = calcularRenta(lineas, fechaInicio, fechaFin);
   const costoEnvio = municipio ? calcularEnvio(municipio) : 0;
   return {
-    dias: renta.dias,
     lineas: renta.lineas,
     subtotalRenta: renta.subtotalRenta,
     costoEnvio,
@@ -16,12 +20,13 @@ export function calcularCotizacion({ lineas, fechaInicio, fechaFin, municipio })
 }
 
 // Para mostrar en vivo mientras el usuario escribe: no lanza, regresa el mensaje.
-// Sin equipos o sin fechas regresa { desglose: null, error: '' }.
+// Solo cuenta las líneas completas (con equipo y fechas); sin ninguna regresa { desglose: null, error: '' }.
 export function calcularCotizacionSegura({ lineas, fechaInicio, fechaFin, municipio }) {
-  const conEquipo = (lineas || []).filter((l) => l.equipoId);
-  if (conEquipo.length === 0 || !fechaInicio || !fechaFin) return { desglose: null, error: '' };
+  const completas = (lineas || []).filter((l) =>
+    l.equipoId && (l.fechaInicio || fechaInicio) && (l.fechaFin || fechaFin));
+  if (completas.length === 0) return { desglose: null, error: '' };
   try {
-    return { desglose: calcularCotizacion({ lineas: conEquipo, fechaInicio, fechaFin, municipio }), error: '' };
+    return { desglose: calcularCotizacion({ lineas: completas, fechaInicio, fechaFin, municipio }), error: '' };
   } catch (e) {
     return { desglose: null, error: e.message };
   }

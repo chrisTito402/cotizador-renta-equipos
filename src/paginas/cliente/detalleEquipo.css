@@ -1,0 +1,56 @@
+/* Detalle del equipo como el Figma. Todo va dentro de .detalle-equipo (las variables vienen de catalogo.css). */
+.detalle-equipo .tarjeta { border-radius: 18px; }
+
+.ficha-migas { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-bottom: 18px; font-size: 13px; color: var(--gris); }
+.ficha-migas a { color: var(--naranja); font-weight: 600; text-decoration: none; }
+.ficha-migas a:hover { text-decoration: underline; }
+.ficha-migas strong { color: var(--tinta); }
+
+.ficha-grid { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(320px, 1fr); align-items: start; gap: 20px; }
+.ficha-izquierda { display: flex; flex-direction: column; gap: 20px; min-width: 0; }
+
+.ficha-foto-tarjeta { padding: 16px; }
+.ficha-foto { display: block; width: 100%; aspect-ratio: 16 / 9; border-radius: 12px; object-fit: cover; }
+.ficha-foto-vacia { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; background: linear-gradient(180deg, #fff3ea 0%, #e9ecf1 100%); color: var(--naranja); font-size: 14px; font-weight: 700; }
+.ficha-foto-vacia svg { width: 38%; max-width: 220px; height: auto; }
+.ficha-foto-vacia span { color: var(--gris); }
+
+.ficha-seccion-cabeza { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 16px; }
+.ficha-seccion-cabeza h2 { margin: 0; padding-left: 12px; border-left: 4px solid var(--naranja); font-size: 18px; }
+.ficha-seccion-cabeza span { font-size: 10px; font-weight: 700; letter-spacing: .06em; color: var(--gris); }
+.ficha-mosaico { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; margin: 0; }
+.ficha-mosaico > div { padding: 14px; border-radius: 12px; background: #f1f5fb; }
+.ficha-mosaico dt { margin-bottom: 8px; font-size: 10px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: var(--gris); }
+.ficha-mosaico dd { margin: 0; font-size: 15px; font-weight: 700; overflow-wrap: break-word; hyphens: auto; }
+
+.ficha-renta { position: sticky; top: 20px; display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+.ficha-renta .catalogo-estado { align-self: flex-start; }
+.ficha-nombre { margin: 0; font-size: 20px; line-height: 1.25; }
+.ficha-nombre span { color: var(--gris); font-weight: 600; }
+.ficha-precio { margin: 0; padding-bottom: 14px; border-bottom: 1px solid var(--borde); color: var(--gris); font-size: 13px; }
+.ficha-precio strong { color: var(--tinta); font-size: 34px; letter-spacing: -.01em; }
+
+.ficha-cantidad { display: flex; justify-content: space-between; align-items: center; gap: 12px; font-size: 13px; font-weight: 600; }
+
+.ficha-costo { display: flex; flex-direction: column; gap: 8px; padding: 14px; border-radius: 12px; background: #f6f8fc; }
+.ficha-costo-cabeza { display: flex; justify-content: space-between; align-items: center; gap: 10px; font-size: 13px; }
+.ficha-costo-cabeza span { padding: 3px 8px; border-radius: 6px; background: var(--blanco); font-size: 11px; color: var(--gris); }
+.ficha-costo p { display: flex; justify-content: space-between; gap: 10px; margin: 0; font-size: 12px; }
+.ficha-costo .sutil { display: block; }
+.ficha-costo-total { padding-top: 10px; border-top: 1px solid var(--borde); font-weight: 700; }
+.ficha-costo-total strong { color: var(--naranja); font-size: 18px; }
+.ficha-costo .ficha-costo-nota { display: block; font-size: 11px; color: var(--gris); }
+
+.ficha-renta .msg-error { margin: 0; font-size: 13px; }
+.ficha-agregar { width: 100%; height: 46px; border-radius: 10px; background: var(--naranja); font-size: 15px; }
+.ficha-sin-cobro { margin: -6px 0 0; text-align: center; font-size: 11px; color: var(--gris); }
+.ficha-renta .detalle-confirmacion { margin-top: 0; }
+
+/* En una columna, el panel de renta va justo después de la foto (antes de las características) */
+@media (max-width: 900px) {
+  .ficha-grid { grid-template-columns: 1fr; }
+  .ficha-izquierda { display: contents; }
+  .ficha-foto-tarjeta { order: 1; }
+  .ficha-renta { position: static; order: 2; }
+  .ficha-caracteristicas { order: 3; }
+}
