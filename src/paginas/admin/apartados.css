@@ -2,6 +2,18 @@
 .pagina-apartados .encabezado { margin-bottom: 0; }
 .apartado-seccion { display: flex; flex-direction: column; gap: 12px; }
 .apartado-seccion h2, .apartado-seccion p { margin-top: 0; margin-bottom: 0; }
+.seccion-desplegable { padding: 0; overflow: hidden; }
+.resumen-seccion-desplegable { display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 76px; padding: 16px 20px; cursor: pointer; list-style: none; }
+.resumen-seccion-desplegable::-webkit-details-marker { display: none; }
+.resumen-seccion-desplegable::after { content: '+'; display: grid; place-items: center; flex: 0 0 32px; width: 32px; height: 32px; border-radius: 50%; background: #f2f4f7; color: var(--gris); font-size: 21px; font-weight: 400; transition: transform .15s ease, background .15s ease; }
+.seccion-desplegable[open] > .resumen-seccion-desplegable { border-bottom: 1px solid var(--borde); }
+.seccion-desplegable[open] > .resumen-seccion-desplegable::after { content: '−'; background: var(--naranja-suave); color: var(--naranja); }
+.resumen-seccion-desplegable > span:first-child { display: flex; flex-direction: column; gap: 5px; }
+.resumen-seccion-desplegable strong { color: var(--tinta); font-size: 17px; }
+.resumen-seccion-desplegable small { color: var(--gris); font-size: 13px; font-weight: 400; }
+.contador-seccion { margin-left: auto; border-radius: 999px; background: #f2f4f7; color: var(--gris); padding: 6px 10px; font-size: 12px; font-weight: 600; white-space: nowrap; }
+.contenido-seccion-desplegable { padding: 0 20px 18px; }
+.contenido-seccion-desplegable.tabla-wrap { padding: 0 0 4px; overflow-x: auto; }
 .apartado-subtitulo { display: flex; justify-content: space-between; align-items: center; padding: 18px 18px 0; }
 .apartado-subtitulo p { margin-top: 4px; }
 .acciones-apartado { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
@@ -27,8 +39,70 @@
 .seguimiento-apartado li { color: var(--gris); }
 .seguimiento-apartado li.estado-actual { color: var(--naranja); font-weight: 700; }
 .detalle-apartado-encabezado { align-items: center; }
+.checklist-apartado { display: flex; flex-wrap: wrap; gap: 8px 24px; padding-left: 20px; margin: 8px 0; }
+.checklist-apartado li { color: var(--gris); }
+.preparacion-apartado { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; border-top: 1px solid var(--borde); padding-top: 14px; }
+.preparacion-apartado p { margin-top: 4px; }
+.pagina-rentas-cliente { display: flex; flex-direction: column; gap: 16px; }
+.aviso-demo-cliente { background: var(--ambar-suave); color: var(--ambar); border-radius: 8px; padding: 12px 14px; margin: 0; line-height: 1.5; }
+.formulario-consulta-rentas { display: flex; flex-direction: column; gap: 10px; }
+.formulario-consulta-rentas .acciones-apartado input { flex: 1; max-width: 420px; }
+.tarjeta-renta-cliente { display: flex; flex-direction: column; gap: 12px; }
+.tarjeta-renta-cliente > p { margin: 0; }
+.encabezado-renta-cliente { display: flex; justify-content: space-between; align-items: start; gap: 12px; }
+.encabezado-renta-cliente h2 { margin: 0 0 4px; }
+.estado-documental-cliente { border-top: 1px solid var(--borde); padding-top: 12px; }
+.estado-documental-cliente > p { margin: 0; }
+.estado-documento-apartado { border-radius: 8px; background: var(--verde-suave); color: var(--verde); padding: 10px 12px; font-size: 14px; }
+.mensaje-exito-rentas { background: var(--verde-suave); color: var(--verde); border-radius: 8px; padding: 10px 12px; margin: 0; }
+.formulario-confirmacion-entrega { display: flex; flex-direction: column; align-items: flex-start; gap: 12px; border-top: 1px solid var(--borde); padding-top: 14px; }
+.formulario-confirmacion-entrega fieldset { display: flex; flex-wrap: wrap; gap: 12px 20px; border: 1px solid var(--borde); border-radius: 8px; padding: 12px 16px; }
+.formulario-confirmacion-entrega legend { font-weight: 600; padding: 0 6px; }
+.opcion-condicion-equipo { display: inline-flex; flex-direction: row; align-items: center; gap: 7px; }
+.opcion-condicion-equipo input { margin: 0; }
+.formulario-confirmacion-entrega > label { width: 100%; }
+.formulario-confirmacion-entrega textarea { width: 100%; max-width: 650px; font: inherit; padding: 10px 12px; border: 1px solid var(--borde); border-radius: 8px; resize: vertical; }
+.resumen-entrega-cliente { border-top: 1px solid var(--borde); padding-top: 12px; }
+.resumen-entrega-cliente h3 { margin: 0 0 8px; }
+.resumen-entrega-cliente p { margin: 5px 0; }
+.aviso-entrega-cliente { display: block; color: var(--verde); font-size: 12px; font-weight: 600; margin-top: 6px; }
+.accion-entrega-cliente { display: flex; flex-direction: column; align-items: flex-start; gap: 4px; }
+.accion-entrega-cliente small { color: var(--gris); font-size: 11px; }
+.maquinaria-rentada { background: #f8f9fb; border: 1px solid var(--borde); border-radius: 10px; padding: 14px; }
+.maquinaria-rentada h3 { margin: 0 0 10px; font-size: 14px; }
+.maquinaria-rentada ul { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 9px; list-style: none; margin: 0; padding: 0; }
+.maquinaria-rentada li { display: flex; align-items: center; gap: 10px; border: 1px solid var(--borde); border-radius: 9px; background: var(--blanco); padding: 11px; }
+.maquinaria-rentada li > span:last-child { display: flex; flex-direction: column; gap: 3px; }
+.maquinaria-rentada small { color: var(--gris); }
+.icono-maquinaria, .icono-factura { display: grid; place-items: center; flex: 0 0 38px; width: 38px; height: 38px; border-radius: 10px; background: var(--naranja-suave); color: var(--naranja); font-weight: 800; }
+.formulario-confirmacion-entrega .opciones-condicion-entrega { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); width: 100%; gap: 12px; border: 0; padding: 0; }
+.opciones-condicion-entrega legend { margin-bottom: 4px; padding: 0; }
+.tarjeta-condicion-entrega { position: relative; display: flex; align-items: flex-start; gap: 10px; min-height: 115px; border: 1px solid var(--borde); border-radius: 12px; background: var(--blanco); padding: 15px; cursor: pointer; transition: border-color .15s ease, box-shadow .15s ease, background .15s ease; }
+.tarjeta-condicion-entrega:hover { border-color: var(--naranja); box-shadow: 0 4px 14px #1b233014; }
+.tarjeta-condicion-entrega.seleccionada { border: 2px solid var(--naranja); background: #fff8f4; box-shadow: 0 0 0 3px #d4541b18; padding: 14px; }
+.tarjeta-condicion-entrega input { flex: 0 0 auto; margin: 3px 0 0; accent-color: var(--naranja); }
+.texto-condicion-entrega { display: flex; flex-direction: column; gap: 6px; line-height: 1.45; }
+.texto-condicion-entrega strong { color: var(--tinta); font-size: 15px; }
+.texto-condicion-entrega > span { color: var(--gris); font-size: 13px; font-weight: 400; }
+.indicador-condicion { position: absolute; top: 15px; right: 15px; width: 8px; height: 8px; border-radius: 50%; background: var(--verde); }
+.indicador-moderado { background: #d99127; }
+.indicador-bajo { background: var(--rojo); }
+.tarjeta-factura { display: flex; flex-direction: column; gap: 18px; overflow: hidden; border-color: #dce2ea; background: linear-gradient(145deg, #fff 0%, #f8fafc 100%); box-shadow: 0 12px 30px #1b23300d; }
+.encabezado-factura { display: flex; align-items: center; gap: 12px; border-bottom: 1px solid var(--borde); padding-bottom: 16px; }
+.encabezado-factura h2 { margin: 0 0 4px; font-size: 20px; }
+.encabezado-factura .icono-factura { width: 46px; height: 46px; flex-basis: 46px; border-radius: 13px; font-size: 20px; }
+.acciones-factura { display: flex; flex-wrap: wrap; gap: 10px; }
+.resumen-factura { grid-template-columns: minmax(130px, .4fr) minmax(0, 1fr); }
+.tarjeta-factura .nota-almacenamiento { margin-top: -10px !important; }
 
 @media (max-width: 800px) {
   .apartado-detalle-grid { grid-template-columns: 1fr; }
   .seguimiento-apartado { flex-direction: column; }
+  .formulario-confirmacion-entrega .opciones-condicion-entrega { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 600px) {
+  .encabezado-renta-cliente { flex-direction: column; }
+  .formulario-consulta-rentas .acciones-apartado { align-items: stretch; flex-direction: column; }
+  .formulario-confirmacion-entrega fieldset { align-items: flex-start; flex-direction: column; }
 }

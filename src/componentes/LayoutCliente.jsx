@@ -25,6 +25,7 @@ export default function LayoutCliente() {
         </Link>
         <div style={{ display: 'flex', gap: 20, alignItems: 'center' }}>
           <Link to="/cotizar" className="boton boton-secundario">Mi cotización ({enCarrito})</Link>
+          <Link to="/mis-rentas" className="link-sutil">Mis rentas</Link>
           <Link to="/admin/cotizaciones" className="link-sutil">Panel administrativo →</Link>
         </div>
       </header>

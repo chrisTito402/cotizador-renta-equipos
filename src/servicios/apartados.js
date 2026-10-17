@@ -6,14 +6,25 @@ const ESTADOS_RENTA = [
   'Apartado',
   'Preparación pendiente',
   'Listo para entrega',
+  'Pendiente de confirmación',
+  'Entregado',
   'En renta',
   'Pendiente de devolución',
   'Devuelto',
   'Cerrado',
 ];
+const ESTADOS_CERRADOS_ENTREGA = ['Entregado', 'En renta', 'Pendiente de devolución', 'Devuelto', 'Cerrado'];
 const DB_NOMBRE = 'cotizador-apartados';
-const DB_VERSION = 1;
+const DB_VERSION = 2;
 const DB_CARTAS = 'cartasFirmadas';
+const CONDICIONES_EQUIPO = ['Excelente', 'Moderado', 'Bajo'];
+export const EVENTO_APARTADOS_ACTUALIZADOS = 'apartados-actualizados';
+
+function notificarApartadosActualizados() {
+  if (typeof window !== 'undefined') {
+    window.dispatchEvent(new Event(EVENTO_APARTADOS_ACTUALIZADOS));
+  }
+}
 
 function leerLista(clave, etiqueta) {
   try {
@@ -30,6 +41,7 @@ function leerLista(clave, etiqueta) {
 function guardarLista(clave, lista, etiqueta) {
   try {
     localStorage.setItem(clave, JSON.stringify(lista));
+    if (clave === CLAVE_APARTADOS) notificarApartadosActualizados();
   } catch (error) {
     throw new Error(`No fue posible guardar ${etiqueta} en este navegador.`, { cause: error });
   }
@@ -114,6 +126,10 @@ export function crearApartado(cotizacionId) {
     municipio: cotizacion.cliente?.municipio || '',
     estado: ESTADOS_RENTA[0],
     montoCotizado: cotizacion.desglose?.total ?? null,
+    preparacionCompletada: false,
+    cartaGeneradaEn: '',
+    cartaEnviadaEn: '',
+    entrega: null,
   };
   guardarLista(CLAVE_APARTADOS, [...apartados, apartado], 'el apartado');
   return apartado;
@@ -124,17 +140,131 @@ export async function actualizarEstadoApartado(apartadoId, nuevoEstado) {
   const indice = apartados.findIndex((item) => item.id === apartadoId);
   if (indice === -1) throw new Error(`No existe el apartado ${apartadoId}.`);
   const actual = apartados[indice];
-  const estadoActualIndex = ESTADOS_RENTA.indexOf(actual.estado);
-  if (estadoActualIndex === -1 || ESTADOS_RENTA[estadoActualIndex + 1] !== nuevoEstado) {
+  const transicionesAdministrativas = {
+    'En renta': 'Pendiente de devolución',
+    'Pendiente de devolución': 'Devuelto',
+    Devuelto: 'Cerrado',
+  };
+  if (transicionesAdministrativas[actual.estado] !== nuevoEstado) {
     throw new Error('Solo se permite avanzar al siguiente estado del proceso.');
-  }
-  if (nuevoEstado === 'En renta' && !(await obtenerCartaFirmada(apartadoId))) {
-    throw new Error('Debes registrar la carta responsiva firmada antes de marcar el equipo como En renta.');
   }
   const actualizado = { ...actual, estado: nuevoEstado };
   apartados[indice] = actualizado;
   guardarLista(CLAVE_APARTADOS, apartados, 'el estado del apartado');
   return actualizado;
+}
+
+function guardarCambiosApartado(apartadoId, cambios) {
+  const apartados = obtenerApartados();
+  const indice = apartados.findIndex((item) => item.id === apartadoId);
+  if (indice === -1) throw new Error(`No existe el apartado ${apartadoId}.`);
+  apartados[indice] = { ...apartados[indice], ...cambios };
+  guardarLista(CLAVE_APARTADOS, apartados, 'el apartado');
+  return apartados[indice];
+}
+
+async function sincronizarEstadoEntrega(apartadoId) {
+  const apartado = obtenerApartado(apartadoId);
+  if (!apartado || ESTADOS_CERRADOS_ENTREGA.includes(apartado.estado)) return apartado;
+  const documentos = await obtenerEstadoDocumental(apartadoId);
+  const listo = Boolean(apartado.preparacionCompletada && documentos.puedeConfirmar);
+  const estado = listo ? 'Pendiente de confirmación'
+    : apartado.preparacionCompletada ? 'Listo para entrega'
+      : apartado.estado;
+  return estado === apartado.estado ? apartado : guardarCambiosApartado(apartadoId, { estado });
+}
+
+export function listarRentasCliente(correo) {
+  const normalizado = String(correo || '').trim().toLocaleLowerCase();
+  if (!normalizado) throw new Error('Escribe el correo usado en la cotización para consultar las rentas.');
+  return obtenerApartados().filter(
+    (apartado) => String(apartado.cliente?.correo || '').trim().toLocaleLowerCase() === normalizado,
+  );
+}
+
+export async function obtenerEstadoDocumental(apartadoId) {
+  const apartado = obtenerApartado(apartadoId);
+  if (!apartado) throw new Error(`No existe el apartado ${apartadoId}.`);
+  const carta = await obtenerCartaFirmada(apartadoId);
+  const cartaGenerada = Boolean(apartado.cartaGeneradaEn);
+  const cartaEnviada = Boolean(apartado.cartaEnviadaEn);
+  const cartaFirmada = Boolean(carta);
+  return {
+    preparacionCompletada: Boolean(apartado.preparacionCompletada),
+    cartaGenerada,
+    cartaEnviada,
+    cartaFirmada,
+    cartaNombre: carta?.nombre || '',
+    cartaFechaSubida: carta?.fechaSubida || '',
+    puedeConfirmar: Boolean(apartado.preparacionCompletada && cartaGenerada && cartaEnviada && cartaFirmada),
+  };
+}
+
+export async function registrarGeneracionCarta(apartadoId) {
+  const apartado = obtenerApartado(apartadoId);
+  if (!apartado) throw new Error(`No existe el apartado ${apartadoId}.`);
+  if (!apartado.cartaGeneradaEn) {
+    guardarCambiosApartado(apartadoId, { cartaGeneradaEn: new Date().toISOString() });
+  }
+}
+
+export async function registrarEnvioCarta(apartadoId) {
+  const apartado = obtenerApartado(apartadoId);
+  if (!apartado) throw new Error(`No existe el apartado ${apartadoId}.`);
+  if (!apartado.cartaGeneradaEn) throw new Error('Genera la carta responsiva antes de registrar su envío.');
+  if (apartado.cartaEnviadaEn) throw new Error('El envío de la carta ya fue registrado.');
+  guardarCambiosApartado(apartadoId, { cartaEnviadaEn: new Date().toISOString() });
+  await sincronizarEstadoEntrega(apartadoId);
+}
+
+export async function marcarPreparacionCompletada(apartadoId) {
+  const apartado = obtenerApartado(apartadoId);
+  if (!apartado) throw new Error(`No existe el apartado ${apartadoId}.`);
+  if (apartado.preparacionCompletada) throw new Error('La preparación ya fue marcada como completada.');
+  if (ESTADOS_CERRADOS_ENTREGA.includes(apartado.estado)) {
+    throw new Error('No se puede modificar la preparación de una renta ya entregada o cerrada.');
+  }
+  guardarCambiosApartado(apartadoId, { preparacionCompletada: true, estado: 'Listo para entrega' });
+  await sincronizarEstadoEntrega(apartadoId);
+}
+
+export function iniciarPreparacion(apartadoId) {
+  const apartado = obtenerApartado(apartadoId);
+  if (!apartado) throw new Error(`No existe el apartado ${apartadoId}.`);
+  if (apartado.estado === 'Apartado') {
+    return guardarCambiosApartado(apartadoId, { estado: 'Preparación pendiente' });
+  }
+  return apartado;
+}
+
+export async function confirmarEntregaCliente(apartadoId, correo, condicion, observaciones = '') {
+  const apartado = obtenerApartado(apartadoId);
+  if (!apartado) throw new Error(`No existe el apartado ${apartadoId}.`);
+  const correoCliente = String(apartado.cliente?.correo || '').trim().toLocaleLowerCase();
+  if (!correoCliente || correoCliente !== String(correo || '').trim().toLocaleLowerCase()) {
+    throw new Error('El apartado no corresponde al correo indicado.');
+  }
+  if (!CONDICIONES_EQUIPO.includes(condicion)) {
+    throw new Error('Selecciona una condición válida para el equipo recibido.');
+  }
+  if (apartado.entrega || apartado.estado === 'Entregado') {
+    throw new Error('La entrega ya fue confirmada y no puede registrarse nuevamente.');
+  }
+  const documentos = await obtenerEstadoDocumental(apartadoId);
+  if (!documentos.puedeConfirmar) {
+    throw new Error('La confirmación se habilita cuando la preparación y la documentación están completas.');
+  }
+  const actualizado = obtenerApartado(apartadoId);
+  if (actualizado.entrega || actualizado.estado === 'Entregado') {
+    throw new Error('La entrega ya fue confirmada y no puede registrarse nuevamente.');
+  }
+  const entrega = {
+    condicion,
+    observaciones: String(observaciones || '').trim(),
+    confirmadoEn: new Date().toISOString(),
+    clienteCorreo: actualizado.cliente.correo,
+  };
+  return guardarCambiosApartado(apartadoId, { entrega, estado: 'Entregado' });
 }
 
 function abrirBaseCartas() {
@@ -180,6 +310,8 @@ export async function guardarCartaFirmada(apartadoId, archivo) {
   } finally {
     base.close();
   }
+  notificarApartadosActualizados();
+  await sincronizarEstadoEntrega(apartadoId);
 }
 
 export async function obtenerCartaFirmada(apartadoId) {
