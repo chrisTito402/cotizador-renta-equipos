@@ -17,8 +17,8 @@ export const COTIZACIONES_SEMILLA = [
         "cantidad": 1
       }
     ],
-    "fechaInicio": "2026-10-20",
-    "fechaFin": "2026-10-22",
+    "fechaInicio": "2026-11-03",
+    "fechaFin": "2026-11-06",
     "desglose": null
   },
   {
