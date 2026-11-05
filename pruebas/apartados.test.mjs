@@ -30,6 +30,18 @@ assert.throws(() => createReservation(next, quote), /ya tiene apartado/);
 assert.throws(() => createReservation(data, { ...quote, id: 'COT-0099', lineas: [{ equipoId: 'EQ-001', cantidad: 5 }] }), /No hay unidades disponibles/);
 assert.equal(JSON.stringify(data), snapshot, 'Un error no deja apartados parciales');
 
+// Fechas por equipo (main): cada renta toma las fechas de su línea; las generales solo cubren líneas viejas.
+const porLinea = createReservation(data, {
+  id: 'COT-0010', cliente: quote.cliente, fechaInicio: '2026-12-01', fechaFin: '2026-12-20',
+  lineas: [
+    { id: 'L-a', equipoId: 'EQ-005', cantidad: 1, fechaInicio: '2026-12-01', fechaFin: '2026-12-05' },
+    { id: 'L-b', equipoId: 'EQ-003', cantidad: 1, fechaInicio: '2026-12-10', fechaFin: '2026-12-20' },
+    { equipoId: 'EQ-007', cantidad: 1 },
+  ],
+}).rentals;
+assert.deepEqual(porLinea.map(r => [r.start, r.end]), [['2026-12-01', '2026-12-05'], ['2026-12-10', '2026-12-20'], ['2026-12-01', '2026-12-20']]);
+assert.throws(() => createReservation(data, { ...quote, id: 'COT-0011', fechaInicio: '', fechaFin: '' }), /sin fechas/);
+
 assert.equal(searchProject(next, 'COT-0001').rentals.length, 2, 'Se encuentra por folio de cotización');
 assert.ok(searchProject(next, 'EQ-005').units.every(unit => unit.modelId === 'EQ-005'), 'Se encuentran unidades por modelo del catálogo');
 console.log('Apartado desde cotización verificado: unidades por modelo, una renta por unidad, sin duplicados ni apartados parciales.');

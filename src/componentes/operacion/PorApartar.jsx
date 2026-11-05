@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { obtenerEquipo } from '../../servicios/almacen.js';
 import { cotizacionesParaApartar, crearApartado, registrarAceptacionSimulada } from '../../servicios/operacion.js';
+import { lineDates } from '../../logica/operacion/apartados.js';
 
 const fecha = (value) => value ? new Date(value + 'T12:00:00').toLocaleDateString('es-MX', { day: '2-digit', month: 'short', year: 'numeric' }) : 'Sin fecha';
 
@@ -32,7 +33,10 @@ export default function PorApartar({ data, onCreated, onOpenRental }) {
           <article className="overview-row" key={c.id}>
             <div className="overview-equipment">
               <strong>{c.id}</strong>
-              <small>{(c.lineas || []).map((l) => `${l.cantidad} × ${obtenerEquipo(l.equipoId)?.nombre || l.equipoId}`).join(' · ')}</small>
+              {(c.lineas || []).map((l, i) => {
+                const { start, end } = lineDates(l, c);
+                return <small key={l.id || i}>{l.cantidad} × {obtenerEquipo(l.equipoId)?.nombre || l.equipoId} · {fecha(start)} al {fecha(end)}</small>;
+              })}
               <span className={'badge ' + (c.apartada ? 'green' : c.aceptada ? 'blue' : 'amber')}><i />{c.apartada ? 'Apartada' : c.aceptada ? 'Aceptada' : 'Pendiente de aceptación'}</span>
             </div>
             <div className="overview-client"><span className="mobile-label">Cliente</span><span>{c.cliente?.nombreCompleto}</span></div>
