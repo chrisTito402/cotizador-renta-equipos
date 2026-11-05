@@ -3,13 +3,17 @@
 // Nadie más edita este archivo. Los demás solo lo importan.
 // ============================================================
 //
+// SOLO PANEL ADMIN: muestra renta, envío y total. Al cliente se le muestra el total (con envío)
+// pero sin la fila ni el monto del envío.
+//
 // Uso:
-//   const desglose = calcularCotizacion({ lineas, fechaInicio, fechaFin, municipio });  // logica/calcularCotizacion.js
+//   const desglose = calcularCotizacion({ lineas, municipio });  // logica/calcularCotizacion.js
 //   <DesgloseCostos desglose={desglose} />
 //
-// desglose = { dias, lineas: [{ nombre, cantidad, precioPorDia, importe }], subtotalRenta, costoEnvio, total }
+// desglose = { lineas: [{ id, nombre, cantidad, precioPorDia, fechaInicio, fechaFin, dias, importe }],
+//              subtotalRenta, costoEnvio, total }
 // Si desglose es null no pinta nada.
-import { pesos } from '../utilidades/formato.js';
+import { pesos, rangoFechas, textoDias } from '../utilidades/formato.js';
 
 const derecha = { textAlign: 'right', whiteSpace: 'nowrap' };
 
@@ -22,19 +26,20 @@ export default function DesgloseCostos({ desglose }) {
           <thead>
             <tr>
               <th>Equipo</th>
-              <th style={derecha}>Cantidad</th>
-              <th style={derecha}>Precio por día</th>
-              <th style={derecha}>Días</th>
+              <th style={derecha}>Cant.</th>
               <th style={derecha}>Importe</th>
             </tr>
           </thead>
           <tbody>
             {desglose.lineas.map((l) => (
-              <tr key={l.equipoId}>
-                <td>{l.nombre}</td>
+              <tr key={l.id || `${l.equipoId}-${l.fechaInicio}-${l.fechaFin}`}>
+                <td>
+                  {l.nombre}
+                  <br /><small className="sutil">
+                    {rangoFechas(l.fechaInicio, l.fechaFin)} · {textoDias(l.dias)} · {pesos(l.precioPorDia)}/día
+                  </small>
+                </td>
                 <td style={derecha}>{l.cantidad}</td>
-                <td style={derecha}>{pesos(l.precioPorDia)}</td>
-                <td style={derecha}>{desglose.dias}</td>
                 <td style={derecha}>{pesos(l.importe)}</td>
               </tr>
             ))}
@@ -46,7 +51,7 @@ export default function DesgloseCostos({ desglose }) {
         <div><span>Envío</span><span>{pesos(desglose.costoEnvio)}</span></div>
         <div className="total"><span>Total estimado</span><span>{pesos(desglose.total)}</span></div>
       </div>
-      <p className="sutil">Precio estimado. El total final lo confirma el área comercial.</p>
+      <p className="sutil">El cliente ve este total, pero no la fila del envío.</p>
     </div>
   );
 }

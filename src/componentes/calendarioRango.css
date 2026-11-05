@@ -1,0 +1,27 @@
+/* Calendario de rango (Cris). Todo va dentro de .calendario para no afectar otras pantallas. */
+.calendario { --cal-naranja: #f5630b; --cal-naranja-suave: #fde3cf; --cal-ocupado: #e6eefb; display: flex; flex-direction: column; gap: 12px; }
+.calendario-cabeza { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+.calendario-titulo { margin: 0; font-size: 14px; font-weight: 700; }
+.calendario-ayuda { margin: 2px 0 0; font-size: 11px; color: var(--gris); }
+.calendario-mes { display: flex; align-items: center; gap: 4px; padding: 4px 6px; border-radius: 8px; background: #eef3fb; font-size: 12px; font-weight: 700; white-space: nowrap; }
+.calendario-mes button { width: 24px; height: 24px; border: 0; border-radius: 6px; background: transparent; color: var(--tinta); font: inherit; font-size: 16px; line-height: 1; cursor: pointer; }
+.calendario-mes button:hover:not(:disabled) { background: var(--blanco); }
+.calendario-mes button:disabled { opacity: .3; cursor: not-allowed; }
+
+.calendario-rejilla { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px 0; padding: 10px 8px; border-radius: 12px; background: #f6f8fc; }
+.calendario-semana { padding: 4px 0 8px; text-align: center; font-size: 11px; font-weight: 600; color: var(--gris); text-decoration: none; }
+.calendario-dia { height: 32px; border: 0; background: transparent; color: var(--tinta); font: inherit; font-size: 12px; cursor: pointer; }
+.calendario-dia:hover:not(:disabled) { outline: 1.5px solid var(--cal-naranja); outline-offset: -2px; border-radius: 6px; }
+.calendario-dia:focus-visible { outline: 2px solid var(--cal-naranja); outline-offset: -2px; border-radius: 6px; }
+.calendario-dia:disabled { cursor: not-allowed; }
+.calendario-pasado { color: #b9c1cc; }
+.calendario-ocupado { margin: 0 2px; border-radius: 999px; background: var(--cal-ocupado); color: #9aa8bd; text-decoration: line-through; }
+.calendario-en-rango { background: var(--cal-naranja-suave); color: #9a3d06; font-weight: 600; }
+.calendario-extremo { border-radius: 6px; background: var(--cal-naranja); color: var(--blanco); font-weight: 700; }
+
+.calendario-leyenda { display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: 11px; color: var(--gris); }
+.calendario-leyenda span { display: inline-flex; align-items: center; gap: 6px; }
+.calendario-leyenda i { display: inline-block; width: 10px; height: 10px; }
+.calendario-muestra-seleccion { border-radius: 2px; background: var(--cal-naranja); }
+.calendario-muestra-ocupado { border-radius: 50%; background: #c9d8f2; }
+.calendario-aviso { margin: 0; }

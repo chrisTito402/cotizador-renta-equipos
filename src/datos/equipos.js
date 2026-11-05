@@ -7,7 +7,7 @@ export const EQUIPOS = [
     "tipo": "Grúa",
     "precioPorDia": 9500,
     "disponible": true,
-    "fotos": [],
+    "fotos": ["/fotos/eq-001.svg"],
     "caracteristicas": {
       "Capacidad": "25 toneladas",
       "Pluma": "31 m",
@@ -21,7 +21,7 @@ export const EQUIPOS = [
     "tipo": "Grúa",
     "precioPorDia": 6200,
     "disponible": true,
-    "fotos": [],
+    "fotos": ["/fotos/eq-002.svg"],
     "caracteristicas": {
       "Capacidad": "12 toneladas",
       "Alcance": "18 m",
@@ -35,7 +35,7 @@ export const EQUIPOS = [
     "tipo": "Montacargas",
     "precioPorDia": 1800,
     "disponible": true,
-    "fotos": [],
+    "fotos": ["/fotos/eq-003.svg"],
     "caracteristicas": {
       "Capacidad": "2.5 toneladas",
       "Altura de elevación": "4.7 m",
@@ -49,7 +49,7 @@ export const EQUIPOS = [
     "tipo": "Montacargas",
     "precioPorDia": 2100,
     "disponible": true,
-    "fotos": [],
+    "fotos": ["/fotos/eq-004.svg"],
     "caracteristicas": {
       "Capacidad": "2.2 toneladas",
       "Altura de elevación": "5.5 m",
@@ -63,7 +63,7 @@ export const EQUIPOS = [
     "tipo": "Retroexcavadora",
     "precioPorDia": 4300,
     "disponible": true,
-    "fotos": [],
+    "fotos": ["/fotos/eq-005.svg"],
     "caracteristicas": {
       "Profundidad de excavación": "4.3 m",
       "Motor": "Diésel 93 hp",
@@ -77,7 +77,7 @@ export const EQUIPOS = [
     "tipo": "Excavadora",
     "precioPorDia": 7800,
     "disponible": false,
-    "fotos": [],
+    "fotos": ["/fotos/eq-006.svg"],
     "caracteristicas": {
       "Profundidad de excavación": "6.7 m",
       "Motor": "Diésel 148 hp",
@@ -91,7 +91,7 @@ export const EQUIPOS = [
     "tipo": "Plataforma",
     "precioPorDia": 1500,
     "disponible": true,
-    "fotos": [],
+    "fotos": ["/fotos/eq-007.svg"],
     "caracteristicas": {
       "Altura de trabajo": "11.6 m",
       "Capacidad": "318 kg",
@@ -105,7 +105,7 @@ export const EQUIPOS = [
     "tipo": "Plataforma",
     "precioPorDia": 3200,
     "disponible": true,
-    "fotos": [],
+    "fotos": ["/fotos/eq-008.svg"],
     "caracteristicas": {
       "Altura de trabajo": "15.7 m",
       "Capacidad": "230 kg",

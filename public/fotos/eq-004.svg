@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" width="640" height="360">
+<defs><linearGradient id="cielo" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff3ea"/><stop offset="1" stop-color="#e9ecf1"/></linearGradient></defs>
+<rect width="640" height="360" fill="url(#cielo)"/>
+<circle cx="560" cy="70" r="120" fill="#f2b705" opacity=".22"/>
+<circle cx="70" cy="40" r="60" fill="#8fd1c4" opacity=".25"/>
+<rect y="300" width="640" height="60" fill="#d9dee6"/>
+<rect y="300" width="640" height="4" fill="#c9d1dc"/>
+<ellipse cx="350" cy="302" rx="190.0" ry="9" fill="#1d2a44" opacity=".16"/>
+
+<rect x="188" y="196" width="66" height="84" rx="16" fill="#2c3d5e"/>
+<path d="M226 200 h160 a10 10 0 0 1 10 10 v62 h-170 z" fill="#f2b705"/>
+<rect x="226" y="258" width="170" height="10" fill="#1d2a44" opacity=".2"/>
+<rect x="276" y="104" width="10" height="100" fill="#1d2a44"/>
+<rect x="370" y="104" width="10" height="100" fill="#1d2a44"/>
+<rect x="268" y="96" width="122" height="12" rx="4" fill="#1d2a44"/>
+<path d="M300 200 v-34 a8 8 0 0 1 8 -8 h14 v42 z" fill="#2c3d5e"/>
+<line x1="352" y1="190" x2="372" y2="168" stroke="#1d2a44" stroke-width="6" stroke-linecap="round"/>
+<path d="M318 214 l-12 22 h12 l-6 20 l18 -26 h-12 l8 -16 z" fill="#1d2a44"/>
+<rect x="404" y="84" width="16" height="204" rx="3" fill="#8a96a8"/>
+<rect x="420" y="96" width="10" height="192" fill="#aab4c3"/>
+<rect x="430" y="200" width="10" height="90" fill="#1d2a44"/>
+<rect x="430" y="282" width="96" height="8" fill="#1d2a44"/>
+<rect x="446" y="268" width="76" height="12" fill="#c08a4e"/>
+<rect x="452" y="206" width="64" height="62" rx="3" fill="#d9a66b"/>
+<rect x="452" y="230" width="64" height="8" fill="#c08a4e"/>
+<circle cx="232" cy="276" r="24" fill="#1d2a44"/><circle cx="232" cy="276" r="10.8" fill="#c9d1dc"/><circle cx="232" cy="276" r="3.6" fill="#2c3d5e"/><circle cx="366" cy="272" r="28" fill="#1d2a44"/><circle cx="366" cy="272" r="12.6" fill="#c9d1dc"/><circle cx="366" cy="272" r="4.2" fill="#2c3d5e"/>
+</svg>

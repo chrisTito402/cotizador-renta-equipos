@@ -1,0 +1,41 @@
+/* Línea de cotización y selector de cantidad (Cris). Todo va dentro de .linea / .selector-cantidad. */
+.linea { --linea-naranja: #f5630b; display: flex; flex-direction: column; gap: 12px; padding: 14px; border: 1px solid #e5eaf1; border-radius: 12px; background: #f6f8fc; }
+.linea-abierta { border-color: var(--linea-naranja); background: var(--blanco); box-shadow: 0 4px 14px #1b233012; }
+.linea-con-error { border-color: var(--rojo); }
+.linea-resumen { display: flex; gap: 12px; align-items: flex-start; }
+.linea-icono { display: inline-flex; flex: 0 0 44px; align-items: center; justify-content: center; height: 44px; border-radius: 10px; background: #fde3cf; color: #c24a0a; }
+.linea-icono svg { width: 24px; height: 24px; }
+.linea-info { display: flex; flex: 1; flex-direction: column; gap: 3px; min-width: 0; }
+.linea-fila { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; }
+.linea-nombre { font-size: 14px; overflow-wrap: anywhere; }
+.linea-importe { font-size: 15px; white-space: nowrap; }
+.linea-detalle { margin: 0; font-size: 12px; color: var(--gris); }
+.linea-fechas { display: inline-flex; align-items: center; gap: 5px; margin: 0; font-size: 12px; font-weight: 600; color: #c24a0a; }
+.linea-sin-fechas { color: var(--rojo); }
+.linea-icono-fecha { flex: none; width: 13px; height: 13px; }
+.linea-acciones { display: inline-flex; gap: 4px; }
+.linea-acciones button { padding: 2px 6px; border: 0; border-radius: 6px; background: transparent; color: var(--naranja); font: inherit; font-size: 12px; font-weight: 600; cursor: pointer; }
+.linea-acciones button:hover { background: var(--naranja-suave); }
+.linea-acciones .linea-quitar { color: var(--gris); }
+.linea-acciones .linea-quitar:hover { background: var(--rojo-suave); color: var(--rojo); }
+.linea-error { margin: 0; }
+
+.linea-editor { display: flex; flex-direction: column; gap: 14px; padding-top: 14px; border-top: 1px solid #e5eaf1; }
+.linea-editor select { width: 100%; }
+.linea-editor-cantidad { display: flex; align-items: center; justify-content: space-between; gap: 12px; font-size: 13px; font-weight: 600; }
+.linea-editor-importe { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; margin: 0; padding: 10px 12px; border-radius: 10px; background: #fff7f0; font-size: 12px; color: var(--gris); }
+.linea-editor-importe strong { font-size: 16px; color: var(--linea-naranja); }
+.linea-editor-acciones { display: flex; flex-wrap: wrap; gap: 8px; }
+.linea-editor .msg-error { margin: 0; font-size: 13px; }
+
+.selector-cantidad { display: inline-flex; align-items: center; border: 1px solid #dde2ea; border-radius: 10px; background: var(--blanco); overflow: hidden; }
+.selector-cantidad button { width: 34px; height: 34px; border: 0; background: transparent; color: var(--tinta); font: inherit; font-size: 18px; cursor: pointer; }
+.selector-cantidad button:hover:not(:disabled) { background: #fff1e7; color: #f5630b; }
+.selector-cantidad button:disabled { opacity: .35; cursor: not-allowed; }
+.selector-cantidad input { width: 46px; height: 34px; padding: 0; border: 0; border-inline: 1px solid #eef1f5; border-radius: 0; text-align: center; font-weight: 600; -moz-appearance: textfield; appearance: textfield; }
+.selector-cantidad input::-webkit-outer-spin-button,
+.selector-cantidad input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+
+@media (max-width: 480px) {
+  .linea-fila { flex-wrap: wrap; }
+}

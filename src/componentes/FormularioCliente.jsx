@@ -18,6 +18,7 @@
 //   valor:    { nombreCompleto, telefono, correo, municipio }
 //   onChange: función que recibe el objeto completo actualizado
 //   errores:  { campo: 'mensaje' } para pintar cada campo en rojo
+//   notaMunicipio: (opcional) texto bajo el municipio; la web no menciona el costo de envío
 //
 // La validación vive en logica/validarCliente.js (también de Katia). Aquí se reexporta con este nombre.
 // Pinta en rojo los campos que traen error. El teléfono solo acepta números.
@@ -28,7 +29,9 @@ import './formularioCliente.css';
 export const CLIENTE_VACIO = { nombreCompleto: '', telefono: '', correo: '', municipio: '' };
 export const validarFormularioCliente = validarCliente;
 
-export default function FormularioCliente({ valor, onChange, errores = {} }) {
+const NOTA_MUNICIPIO = 'La tarifa de envío cambia según el municipio y se suma al total.';
+
+export default function FormularioCliente({ valor, onChange, errores = {}, notaMunicipio = NOTA_MUNICIPIO }) {
   const cambiar = (campo) => (e) => onChange({ ...valor, [campo]: e.target.value });
 
   const cambiarTelefono = (e) => {
@@ -87,7 +90,7 @@ export default function FormularioCliente({ valor, onChange, errores = {} }) {
             {MUNICIPIOS.map((m) => <option key={m}>{m}</option>)}
           </select>
           {errores.municipio && <span className="msg-error">{errores.municipio}</span>}
-          <span className="nota">La tarifa de envío cambia según el municipio y se suma al total.</span>
+          <span className="nota">{notaMunicipio}</span>
         </label>
       </div>
     </div>

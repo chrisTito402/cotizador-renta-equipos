@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" width="640" height="360">
+<defs><linearGradient id="cielo" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff3ea"/><stop offset="1" stop-color="#e9ecf1"/></linearGradient></defs>
+<rect width="640" height="360" fill="url(#cielo)"/>
+<circle cx="560" cy="70" r="120" fill="#ffc94a" opacity=".22"/>
+<circle cx="70" cy="40" r="60" fill="#8fd1c4" opacity=".25"/>
+<rect y="300" width="640" height="60" fill="#d9dee6"/>
+<rect y="300" width="640" height="4" fill="#c9d1dc"/>
+<ellipse cx="340" cy="302" rx="180.0" ry="9" fill="#1d2a44" opacity=".16"/>
+
+<path d="M160 238 h236 a8 8 0 0 1 8 8 v26 h-252 v-26 a8 8 0 0 1 8 -8 z" fill="#f26b2a"/>
+<rect x="152" y="262" width="252" height="10" fill="#1d2a44" opacity=".2"/>
+<path d="M214 196 h104 v44 h-104 a14 14 0 0 1 -14 -14 v-16 a14 14 0 0 1 14 -14 z" fill="#2c3d5e"/>
+<rect x="200" y="206" width="36" height="34" rx="6" fill="#f26b2a"/>
+<line x1="296" y1="204" x2="392" y2="116" stroke="#ffc94a" stroke-width="20" stroke-linecap="round"/>
+<line x1="392" y1="116" x2="518" y2="88" stroke="#ffc94a" stroke-width="16" stroke-linecap="round"/>
+<line x1="518" y1="88" x2="530" y2="104" stroke="#2c3d5e" stroke-width="10" stroke-linecap="round"/>
+<circle cx="296" cy="204" r="8" fill="#1d2a44"/><circle cx="392" cy="116" r="7" fill="#1d2a44"/>
+<rect x="510" y="100" width="70" height="30" rx="3" fill="#f26b2a"/>
+<rect x="510" y="66" width="70" height="5" rx="2" fill="#1d2a44"/>
+<rect x="510" y="66" width="5" height="36" fill="#1d2a44"/><rect x="543" y="66" width="5" height="36" fill="#1d2a44"/><rect x="575" y="66" width="5" height="36" fill="#1d2a44"/>
+<circle cx="200" cy="276" r="24" fill="#1d2a44"/><circle cx="200" cy="276" r="10.8" fill="#c9d1dc"/><circle cx="200" cy="276" r="3.6" fill="#2c3d5e"/><circle cx="356" cy="276" r="24" fill="#1d2a44"/><circle cx="356" cy="276" r="10.8" fill="#c9d1dc"/><circle cx="356" cy="276" r="3.6" fill="#2c3d5e"/>
+</svg>

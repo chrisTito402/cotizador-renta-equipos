@@ -67,6 +67,10 @@ label { display: flex; flex-direction: column; gap: 6px; font-size: 14px; font-w
 input, select { font: inherit; font-weight: 400; padding: 10px 12px; border: 1px solid var(--borde); border-radius: 8px; background: var(--blanco); }
 input.invalido, select.invalido { border-color: var(--rojo); }
 .msg-error { color: var(--rojo); font-size: 12px; font-weight: 400; }
+textarea { font: inherit; font-size: 15px; font-weight: 400; padding: 12px 14px; border: 1.5px solid #dde2ea; border-radius: 12px; background: #f8fafc; resize: vertical; }
+textarea:focus { outline: 2px solid var(--naranja); outline-offset: 1px; background: var(--blanco); }
+.campo-notas-titulo { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+.campo-notas-titulo small { font-size: 10px; font-weight: 700; letter-spacing: .06em; color: var(--gris); }
 
 .desglose { display: flex; flex-direction: column; gap: 8px; font-size: 15px; }
 .desglose div { display: flex; justify-content: space-between; }

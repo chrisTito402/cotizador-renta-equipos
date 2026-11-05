@@ -1,68 +1,46 @@
 // DUEÑA: Katia · RAMA: feature/cotizacion-panel
+// (fechas por equipo y notas: rama feature/fechas-por-equipo, con aviso en el grupo)
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import FormularioCliente, { CLIENTE_VACIO, validarFormularioCliente } from '../../componentes/FormularioCliente.jsx';
-import SelectorEquipos from '../../componentes/SelectorEquipos.jsx';
+import SelectorEquipos, { lineaVacia } from '../../componentes/SelectorEquipos.jsx';
 import DesgloseCostos from '../../componentes/DesgloseCostos.jsx';
+import { CampoNotas } from '../../componentes/CamposCotizacion.jsx';
 import { obtenerEquipos, guardarCotizacion } from '../../servicios/almacen.js';
-import { calcularCotizacion } from '../../logica/calcularCotizacion.js';
+import { calcularCotizacionSegura } from '../../logica/calcularCotizacion.js';
 import './crearCotizacion.css';
 
-// Fecha de hoy en hora local como 'AAAA-MM-DD' (toISOString usa UTC y en la tarde ya da mañana)
-function hoyLocal() {
-  const d = new Date();
-  const mes = String(d.getMonth() + 1).padStart(2, '0');
-  const dia = String(d.getDate()).padStart(2, '0');
-  return `${d.getFullYear()}-${mes}-${dia}`;
-}
-
-// Equipos y fechas. Las fechas 'AAAA-MM-DD' se pueden comparar como texto.
-function validarRenta(lineas, fechaInicio, fechaFin) {
+// Cada línea necesita equipo y fechas. Las fechas pasadas, la cantidad y los días ocupados
+// los revisa el calendario y otra vez guardarCotizacion (almacen.js).
+function validarRenta(lineas) {
   const errores = {};
-  if (lineas.some((l) => !l.equipoId)) {
-    errores.equipos = 'Elige un equipo en cada fila o quita la fila vacía';
-  }
-  if (!fechaInicio) {
-    errores.fechaInicio = 'Elige la fecha de inicio';
-  } else if (fechaInicio < hoyLocal()) {
-    errores.fechaInicio = 'La fecha de inicio no puede ser antes de hoy';
-  }
-  if (!fechaFin) {
-    errores.fechaFin = 'Elige la fecha de fin';
-  } else if (fechaInicio && fechaFin < fechaInicio) {
-    errores.fechaFin = 'La fecha de fin no puede ser antes del inicio';
+  if (lineas.length === 0) {
+    errores.equipos = 'Agrega al menos un equipo';
+  } else if (lineas.some((l) => !l.equipoId)) {
+    errores.equipos = 'Elige un equipo en cada línea o quita la línea vacía';
+  } else if (lineas.some((l) => !l.fechaInicio || !l.fechaFin)) {
+    errores.equipos = 'Elige las fechas de cada equipo (toca “Cambiar”)';
   }
   return errores;
 }
 
 export default function CrearCotizacion() {
   const navigate = useNavigate();
-  const [lineas, setLineas] = useState([{ equipoId: '', cantidad: 1 }]);
-  const [fechaInicio, setFechaInicio] = useState('');
-  const [fechaFin, setFechaFin] = useState('');
+  const [lineas, setLineas] = useState(() => [lineaVacia()]);
   const [cliente, setCliente] = useState(CLIENTE_VACIO);
+  const [notas, setNotas] = useState('');
   const [errores, setErrores] = useState({});
+  const [errorLinea, setErrorLinea] = useState(null);
   const [mensaje, setMensaje] = useState('');
 
-  const hoy = hoyLocal();
-  const fechasAlReves = fechaInicio && fechaFin && fechaFin < fechaInicio;
-
-  // Desglose en vivo: solo si hay equipo elegido y las dos fechas en orden
-  const lineasConEquipo = lineas.filter((l) => l.equipoId);
-  let desglose = null;
-  let errorCalculo = '';
-  if (lineasConEquipo.length > 0 && fechaInicio && fechaFin && !fechasAlReves) {
-    try {
-      desglose = calcularCotizacion({ lineas: lineasConEquipo, fechaInicio, fechaFin, municipio: cliente.municipio });
-    } catch (e) {
-      errorCalculo = e.message;
-    }
-  }
+  // Desglose en vivo con las líneas que ya tienen equipo y fechas
+  const { desglose, error: errorCalculo } = calcularCotizacionSegura({ lineas, municipio: cliente.municipio });
 
   const guardar = () => {
     setMensaje('');
+    setErrorLinea(null);
     const validacion = validarFormularioCliente(cliente);
-    const todos = { ...validacion.errores, ...validarRenta(lineas, fechaInicio, fechaFin) };
+    const todos = { ...validacion.errores, ...validarRenta(lineas) };
     setErrores(todos);
     if (Object.keys(todos).length > 0) {
       setMensaje('Revisa los campos marcados en rojo');
@@ -70,10 +48,11 @@ export default function CrearCotizacion() {
     }
 
     try {
-      guardarCotizacion({ origen: 'panel', cliente, lineas, fechaInicio, fechaFin });
+      guardarCotizacion({ origen: 'panel', cliente, lineas, notas });
       navigate('/admin/cotizaciones');
     } catch (e) {
       if (e.errores) setErrores(e.errores);
+      if (e.lineaId) setErrorLinea({ id: e.lineaId, mensaje: e.message });
       setMensaje(e.message);
     }
   };
@@ -91,40 +70,18 @@ export default function CrearCotizacion() {
       <div className="columnas">
         <div className="columna-principal">
           <div className="tarjeta">
-            <h2 className="etiqueta">Equipos</h2>
-            <SelectorEquipos equipos={obtenerEquipos()} lineas={lineas} onChange={setLineas} />
+            <h2 className="etiqueta">Equipos y fechas</h2>
+            <SelectorEquipos equipos={obtenerEquipos()} lineas={lineas} onChange={setLineas} errorLinea={errorLinea} />
             {errores.equipos && <p className="msg-error">{errores.equipos}</p>}
-          </div>
-
-          <div className="tarjeta">
-            <h2 className="etiqueta">Fechas de renta</h2>
-            <div className="fechas">
-              <label>Fecha de inicio
-                <input
-                  type="date"
-                  min={hoy}
-                  value={fechaInicio}
-                  onChange={(e) => setFechaInicio(e.target.value)}
-                  className={errores.fechaInicio ? 'invalido' : ''}
-                />
-                {errores.fechaInicio && <span className="msg-error">{errores.fechaInicio}</span>}
-              </label>
-              <label>Fecha de fin
-                <input
-                  type="date"
-                  min={fechaInicio || hoy}
-                  value={fechaFin}
-                  onChange={(e) => setFechaFin(e.target.value)}
-                  className={errores.fechaFin ? 'invalido' : ''}
-                />
-                {errores.fechaFin && <span className="msg-error">{errores.fechaFin}</span>}
-              </label>
-            </div>
           </div>
 
           <div className="tarjeta">
             <h2 className="etiqueta">Cliente</h2>
             <FormularioCliente valor={cliente} onChange={setCliente} errores={errores} />
+          </div>
+
+          <div className="tarjeta">
+            <CampoNotas valor={notas} onChange={setNotas} />
           </div>
         </div>
 
@@ -133,9 +90,8 @@ export default function CrearCotizacion() {
             <h2 className="etiqueta">Desglose de costos</h2>
             {desglose && <DesgloseCostos desglose={desglose} />}
             {errorCalculo && <p className="msg-error">{errorCalculo}</p>}
-            {fechasAlReves && <p className="msg-error">La fecha de fin no puede ser antes del inicio</p>}
-            {!desglose && !errorCalculo && !fechasAlReves && (
-              <p className="sutil">Elige al menos un equipo y las fechas para ver el costo.</p>
+            {!desglose && !errorCalculo && (
+              <p className="sutil">Elige al menos un equipo con sus fechas para ver el costo.</p>
             )}
           </div>
           {mensaje && <p className="msg-error mensaje-general">{mensaje}</p>}

@@ -1,89 +1,74 @@
 // ============================================================
 // DUEÑA: Katia  ·  RAMA: feature/formulario-cliente
-// (va en la misma rama que el formulario porque Cris lo necesita
-//  para "Modificar cotización" desde el miércoles en la noche)
+// (fechas por equipo: rama feature/fechas-por-equipo, con aviso en el grupo)
 // Nadie más edita este archivo. Los demás solo lo importan.
 // ============================================================
 //
 // Uso (panel y modificar):
 //
 //   const equipos = obtenerEquipos();   // servicios/almacen.js
-//   const [lineas, setLineas] = useState([{ equipoId: '', cantidad: 1 }]);
+//   const [lineas, setLineas] = useState([lineaVacia()]);
 //   <SelectorEquipos equipos={equipos} lineas={lineas} onChange={setLineas} />
 //
 // Props:
-//   equipos:  lista que regresa obtenerEquipos()
-//   lineas:   [{ equipoId, cantidad }]
-//   onChange: recibe la lista completa de líneas actualizada
+//   equipos:    lista que regresa obtenerEquipos()
+//   lineas:     [{ id, equipoId, cantidad, fechaInicio, fechaFin }]  (cada equipo con SUS fechas)
+//   onChange:   recibe la lista completa de líneas actualizada
+//   errorLinea: (opcional) { id, mensaje } para marcar la línea que no se pudo guardar
 //
-// Permite elegir equipo, cambiar cantidad (entero de 1 a MAX_CANTIDAD), agregar y quitar líneas.
-// Un equipo no se puede elegir en dos filas.
-import { pesos } from '../utilidades/formato.js';
+// Cada línea es una tarjeta (LineaCotizacion). "Cambiar" abre su calendario con los días
+// ocupados de ese equipo; así, si hay dos del mismo equipo en fechas distintas, se elige cuál.
+// El mismo equipo puede ir en dos líneas si las fechas son distintas; con las mismas fechas se juntan.
+// Cantidad: entero de 1 a MAX_CANTIDAD (constantes.js).
+import { useState } from 'react';
+import LineaCotizacion from './LineaCotizacion.jsx';
+import { juntarLineas, nuevoIdLinea } from '../servicios/almacen.js';
 import './selectorEquipos.css';
 
-export const MAX_CANTIDAD = 20;
+export const lineaVacia = () => ({ id: nuevoIdLinea(), equipoId: '', cantidad: 1, fechaInicio: '', fechaFin: '' });
 
-export default function SelectorEquipos({ equipos = [], lineas = [], onChange }) {
-  const cambiarLinea = (i, campo, valor) => {
-    const nuevas = lineas.map((l, j) => (j === i ? { ...l, [campo]: valor } : l));
-    onChange(nuevas);
+export default function SelectorEquipos({ equipos = [], lineas = [], onChange, errorLinea = null }) {
+  // Una línea nueva (sin equipo) arranca abierta
+  const [abierta, setAbierta] = useState(() => lineas.find((l) => !l.equipoId)?.id ?? null);
+
+  const guardarLinea = (linea) => {
+    onChange(juntarLineas(lineas.map((l) => (l.id === linea.id ? linea : l))));
   };
 
-  // parseInt quita decimales ("1.5" → 1); si no es número se queda en 1
-  const cambiarCantidad = (i, texto) => {
-    const numero = parseInt(texto, 10) || 1;
-    cambiarLinea(i, 'cantidad', Math.min(MAX_CANTIDAD, Math.max(1, numero)));
+  const quitarLinea = (id) => {
+    onChange(lineas.filter((l) => l.id !== id));
+  };
+
+  // Si se cancela una línea que nunca tuvo equipo, se quita
+  const cancelar = (id) => {
+    setAbierta(null);
+    if (lineas.some((l) => l.id === id && !l.equipoId)) quitarLinea(id);
   };
 
   const agregarLinea = () => {
-    onChange([...lineas, { equipoId: '', cantidad: 1 }]);
+    const nueva = lineaVacia();
+    onChange([...lineas.filter((l) => l.equipoId), nueva]);
+    setAbierta(nueva.id);
   };
-
-  const quitarLinea = (i) => {
-    onChange(lineas.filter((l, j) => j !== i));
-  };
-
-  const totalDisponibles = equipos.filter((eq) => eq.disponible).length;
 
   return (
     <div className="selector-equipos">
-      {lineas.map((l, i) => (
-        <div key={i} className="fila-equipo">
-          <label className="campo-equipo">Equipo
-            <select value={l.equipoId} onChange={(e) => cambiarLinea(i, 'equipoId', e.target.value)}>
-              <option value="">Selecciona…</option>
-              {equipos.map((eq) => (
-                <option
-                  key={eq.id}
-                  value={eq.id}
-                  disabled={!eq.disponible || lineas.some((otra, j) => j !== i && otra.equipoId === eq.id)}
-                >
-                  {eq.nombre} · {pesos(eq.precioPorDia)}/día{eq.disponible ? '' : ' (no disponible)'}
-                </option>
-              ))}
-            </select>
-          </label>
-          <label className="campo-cantidad">Cantidad
-            <input
-              type="number"
-              min="1"
-              max={MAX_CANTIDAD}
-              step="1"
-              value={l.cantidad}
-              onChange={(e) => cambiarCantidad(i, e.target.value)}
-            />
-          </label>
-          <button type="button" className="boton-quitar" onClick={() => quitarLinea(i)} disabled={lineas.length === 1}>
-            Quitar
-          </button>
-        </div>
+      {lineas.length === 0 && <p className="sutil">Todavía no hay equipos. Agrega uno.</p>}
+      {lineas.map((l) => (
+        <LineaCotizacion
+          key={l.id}
+          linea={l}
+          equipos={equipos}
+          abierta={abierta === l.id}
+          onAbrir={() => setAbierta(l.id)}
+          onCerrar={() => setAbierta(null)}
+          onCancelar={() => cancelar(l.id)}
+          onGuardar={guardarLinea}
+          onQuitar={() => quitarLinea(l.id)}
+          error={errorLinea?.id === l.id ? errorLinea.mensaje : ''}
+        />
       ))}
-      <button
-        type="button"
-        className="boton-agregar"
-        onClick={agregarLinea}
-        disabled={lineas.length >= totalDisponibles}
-      >
+      <button type="button" className="boton-agregar" onClick={agregarLinea} disabled={abierta !== null}>
         + Agregar equipo
       </button>
     </div>
