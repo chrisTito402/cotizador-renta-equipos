@@ -1,0 +1,28 @@
+/* Pantallas comerciales (cotizaciones) dentro del panel administrativo.
+   Solo ajusta su apariencia para que coincida con el área operativa; no cambia su estructura.
+   Todo bajo .comercial, así el sitio del cliente no se ve afectado. */
+.comercial { display: flex; flex-direction: column; flex: 1; }
+.comercial h1 { font-size: 26px; line-height: 1.3; font-weight: 700; letter-spacing: -.55px; margin: 0 0 6px; }
+.comercial h2 { font-size: 18px; line-height: 1.4; font-weight: 650; letter-spacing: -.2px; }
+.comercial .sutil { font-size: 14px; }
+.comercial .encabezado { margin-bottom: 22px; }
+
+.comercial .tarjeta { border-radius: var(--radio); box-shadow: 0 1px 3px #1b233005; }
+.comercial .tabla-wrap { padding: 0; overflow-x: auto; }
+
+.comercial .boton { display: inline-flex; align-items: center; justify-content: center; gap: 9px; min-height: 42px; padding: 10px 16px; font-size: 13px; white-space: nowrap; border: 1px solid transparent; transition: background-color .15s, border-color .15s; }
+.comercial .boton:hover:not(:disabled) { background: #b84412; }
+.comercial .boton.boton-secundario { border-color: var(--borde); }
+.comercial .boton.boton-secundario:hover:not(:disabled) { background: #f6f8fa; border-color: #c9d1dc; }
+
+.comercial th { font-size: 11px; font-weight: 600; letter-spacing: .04em; background: #f9fafc; padding: 13px 20px; }
+.comercial td { font-size: 13px; padding: 18px 20px; }
+.comercial tbody tr:last-child td { border-bottom: 0; }
+.comercial tbody tr:hover { background: #fcfcfd; }
+
+.comercial .estado { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; line-height: 1.3; padding: 4px 9px; white-space: nowrap; }
+.comercial .estado::before { content: ''; width: 4px; height: 4px; border-radius: 50%; background: currentColor; }
+
+.comercial label { font-size: 13px; }
+.comercial input, .comercial select, .comercial textarea { min-height: 42px; color: var(--tinta); }
+.comercial :is(input, select, textarea, button, a):focus-visible { outline: 2px solid var(--naranja); outline-offset: 3px; }

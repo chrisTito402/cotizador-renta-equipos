@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test": "node pruebas/operaciones.test.mjs && node pruebas/alertas.test.mjs && node pruebas/busqueda.test.mjs && node pruebas/apartados.test.mjs"
   },
   "dependencies": {
     "jspdf": "^4.2.1",

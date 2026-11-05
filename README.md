@@ -25,7 +25,7 @@ En `/admin/cotizaciones` hay un botón "Reiniciar datos de prueba".
 | `/` | Catálogo de equipos | Héctor | feature/catalogo |
 | `/equipos/:id` | Detalle del equipo | Héctor | feature/catalogo |
 | `/cotizar` | Mi cotización (web, varios equipos) | Cris | feature/cotizacion-web |
-| `/mis-rentas` | Consulta simulada y confirmación de rentas del cliente | — | — |
+| `/admin/:seccion` | Operaciones en el mismo panel: inicio, apartar, alertas, registros, equipos, mantenimiento, clientes | Operación | EquipoRenta |
 | `/admin/cotizaciones` | Lista de cotizaciones | Base | — |
 | `/admin/cotizaciones/nueva` | Crear cotización desde el panel | Katia | feature/cotizacion-panel |
 | `/admin/cotizaciones/:id/editar` | Modificar cotización | Cris | feature/cotizacion-web |
@@ -55,8 +55,22 @@ se trabaja con las versiones falsas.
 - Antes de abrir un PR: `git merge main` en tu rama y probar que corre.
 - Las funciones de `src/logica/` son puras: reciben datos y regresan datos. No usan `document`, `localStorage` ni nada del navegador, para poder moverlas al backend después.
 
-## Apartados, entrega y documentos
+## Área operativa (apartados, rentas y equipos)
 
-El seguimiento administrativo se encuentra en `/admin/apartados`. Desde ahí se prepara el equipo, se registra manualmente el envío de la carta responsiva y se carga la carta firmada. Al completar la preparación, la acción de entrega queda deshabilitada para el administrador: solo el cliente registra la recepción desde `/mis-rentas`, con la condición del equipo y las observaciones. La confirmación aparece en el seguimiento administrativo y habilita la sección «Factura», con dos acciones: generar y descargar el PDF al solicitarlo, o generar/descargar el PDF y abrir el chat de WhatsApp para enviarlo. La factura no se guarda en el sistema.
+Integrada desde `ProyectoMetodologia`; reemplaza la versión preliminar de `/admin/apartados` y `/mis-rentas`. Vive en el mismo panel administrativo (`/admin`), con un menú lateral que agrupa Comercial y Operaciones. `src/paginas/operacion/Operacion.jsx` es el layout de todo `/admin`; las pantallas de cotizaciones se muestran dentro de `.comercial` con `comercial-en-panel.css`, que solo ajusta su apariencia.
 
-Este flujo es un MVP local: no hay autenticación ni backend. El correo en `/mis-rentas` solo simula la identidad y no protege datos frente a otros usuarios; cotizaciones, rentas y estados se guardan en `localStorage`, y las cartas firmadas en IndexedDB del mismo navegador/origen. Las pantallas administrativas abiertas en otras pestañas del mismo navegador se actualizan con los cambios; no hay sincronización entre dispositivos o navegadores. El PDF de factura se genera bajo demanda, se identifica como documento no fiscal y WhatsApp no adjunta archivos automáticamente: el usuario debe adjuntar el PDF descargado.
+- **Por apartar:** cotizaciones aceptadas (Aprobadas o con aceptación simulada). «Crear apartado» asigna una **unidad física disponible** por cada equipo y cantidad, y crea una renta `R-xxx` en estado Apartado.
+- **Flujo de cada renta:** preparación (mecánico e inventario) → entrega → firma de responsiva / instalación / fallas / revisiones → recolección → devolución (En revisión) → estado final (Disponible, En mantenimiento o Fuera de servicio).
+- **Documentos:** responsiva imprimible y foto de la hoja firmada. Documento de cobro no fiscal en PDF (por cotización) con envío opcional por WhatsApp, disponible después de la entrega; no se guarda y WhatsApp no adjunta el PDF automáticamente.
+- **Equipos:** unidades `UN-xxx`; cada una apunta con `modelId` a un modelo del catálogo comercial (`EQ-xxx`).
+- Alertas, buscador global, registros históricos, clientes y calendario por unidad.
+
+| Capa | Archivos |
+|---|---|
+| Lógica pura | `src/logica/operacion/` (`operaciones`, `apartados`, `alertas`, `busqueda`, `registros`, `calendario`) |
+| Datos | `src/servicios/operacion.js` (`localStorage`, clave `cotizador:operacion`) |
+| Pantallas | `src/paginas/operacion/Operacion.jsx`, `src/componentes/operacion/` |
+| Estilos | `operacion.css` (bajo `.operacion`, excluye `.comercial`) y `comercial-en-panel.css` en `src/paginas/operacion/` |
+| Pruebas | `pruebas/*.test.mjs` → `npm test` |
+
+MVP local: sin backend ni autenticación; los datos viven en este navegador. «Ayuda → Reiniciar la demostración» recarga los ejemplos operativos.
